@@ -11,6 +11,7 @@
 # Changes on every build
 [string]$Version = "0.0.1"
 [string]$PowerShellVersion = "5.1"
+[string]$Tags = "windows, maintenance, autoupdate, autoupdate-script, psmodule, update, winget"
 [string]$ProcessorArchitecture = ""
 [string]$LicenseUrl = "https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE"
 [string]$ProjectUrl = "https://github.com/rstolpe/WinSoftwareUpdate"
@@ -125,6 +126,7 @@ $PSDfileContent = $PSDfileContent -replace '{{projecturi}}', $ProjectUrl
 $PSDfileContent = $PSDfileContent -replace '{{description}}', $Description
 $PSDfileContent = $PSDfileContent -replace '{{powershellversion}}', $PowerShellVersion
 $PSDfileContent = $PSDfileContent -replace '{{processorarchitecture}}}', $ProcessorArchitecture
+$PSDfileContent = $PSDfileContent -replace '{{tags}}', $Tags
 
 # If $FunctionPSD are empty, then adding @() instead according to best practices for performance
 if ($null -ne $FunctionPSD) {

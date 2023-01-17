@@ -121,7 +121,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            # Tags = @(windows, maintenance, autoupdate, autoupdate-script, psmodule, update, winget)
 
             # A URL to the license for this module.
             LicenseUri = 'https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE'
