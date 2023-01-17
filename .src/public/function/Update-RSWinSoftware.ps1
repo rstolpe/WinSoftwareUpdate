@@ -1,5 +1,5 @@
 ﻿Function Update-RSWinSoftware {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Decide if you want to skip the WinGet version check, default it set to false")]
         [switch]$SkipVersionCheck = $false

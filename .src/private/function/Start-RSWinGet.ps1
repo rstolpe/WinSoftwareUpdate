@@ -1,5 +1,6 @@
 ﻿Function Start-RSWinGet {
-    
+    [CmdletBinding(SupportsShouldProcess)]
+    param( )
     Write-OutPut "Checks if any softwares needs to be updated"
     try {
         WinGet.exe upgrade --all --silent --force --accept-source-agreements --disable-interactivity --include-unknown

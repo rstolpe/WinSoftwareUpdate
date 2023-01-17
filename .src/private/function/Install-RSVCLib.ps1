@@ -1,5 +1,5 @@
-﻿Function Install-RSVCLibs {
-    [CmdletBinding()]
+﻿Function Install-RSVCLib {
+    [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]
         [string]$VCLibsOutFile,
