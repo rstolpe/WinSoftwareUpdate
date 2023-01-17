@@ -1,6 +1,6 @@
 ﻿
 Line                 : 4
-Column               : 33
+Column               : 37
 Message              : Line has trailing whitespace
 Extent               : System.Management.Automation.Language.ScriptExtent
 RuleName             : PSAvoidTrailingWhitespace
