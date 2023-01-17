@@ -2,7 +2,7 @@
 MIT License
 
 Copyright (C) 2023 Robin Stolpe. 
-<robin@stolpe.io>
+robin@stolpe.io
 <https://stolpe.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -74,7 +74,7 @@ SOFTWARE.
     # ClrVersion = ''
 
     # Processor architecture (None, X86, Amd64) required by this module
-    ProcessorArchitecture = 'X86, Amd64, X64, ARM64'
+    ProcessorArchitecture = 'X64, X86, amd64, arm64'
 
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
