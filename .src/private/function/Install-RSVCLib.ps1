@@ -1,4 +1,31 @@
 ﻿Function Install-RSVCLib {
+    <#
+        .SYNOPSIS
+        This function is connected and used of the main function for this module, Update-RSWinSoftware.
+        So when you run the Update-RSWinSoftware function this function will be called during the process.
+
+        .DESCRIPTION
+        This function will install VCLibs if it's not installed on the computer.
+
+        .PARAMETER VCLibsOutFile
+        The path to the output file for the VCLibs when downloaded, this is pasted from the main function for this module, Update-RSWinSoftware.
+
+        .PARAMETER VCLibsUrl
+        The url path to where the VCLibs can be downloaded from, this is pasted from the main function for this module, Update-RSWinSoftware.
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        Website/Blog:   https://stolpe.io
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
     [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]

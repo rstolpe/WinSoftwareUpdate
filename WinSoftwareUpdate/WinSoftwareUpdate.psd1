@@ -56,7 +56,7 @@
     Copyright = '(c) 2023 Robin Stolpe. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = ''
+    Description = 'This module will help you to update your software on your Windows 10 and Windows 11 machines.'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion = '5.1'
@@ -124,10 +124,10 @@
             # Tags = @()
 
             # A URL to the license for this module.
-            LicenseUri = ''
+            LicenseUri = 'https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE'
 
             # A URL to the main website for this project.
-            ProjectUri = ''
+            ProjectUri = 'https://github.com/rstolpe/WinSoftwareUpdate'
 
             # A URL to an icon representing this module.
             # IconUri = ''

@@ -67,6 +67,37 @@ Function Update-RSWinSoftware {
     }
 }
 Function Confirm-RSWinGet {
+    <#
+        .SYNOPSIS
+        This function is connected and used of the main function for this module, Update-RSWinSoftware.
+        So when you run the Update-RSWinSoftware function this function will be called during the process.
+
+        .DESCRIPTION
+        This function will connect to the GitHub API and check if there is a newer version of WinGet to download and install.
+
+        .PARAMETER GitHubUrl
+        Url to the GitHub API for the latest release of WinGet
+
+        .PARAMETER GithubHeaders
+        The headers and API version for the GitHub API, this is pasted from the main function for this module, Update-RSWinSoftware.
+        This is pasted in from the main function for this module, Update-RSWinSoftware.
+
+        .PARAMETER WinGet
+        
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        Website/Blog:   https://stolpe.io
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The GitHub API url for the latest release of WinGet")]
@@ -123,6 +154,27 @@ Function Confirm-RSWinGet {
     }
 }
 Function Get-RSInstallInfo {
+    <#
+        .SYNOPSIS
+        This function is connected and used of the main function for this module, Update-RSWinSoftware.
+        So when you run the Update-RSWinSoftware function this function will be called during the process.
+
+        .DESCRIPTION
+        This function will collect the following data from the computer and store it in a PSCustomObject to make it easier for the main function for this module, Update-RSWinSoftware, to use the data.
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        Website/Blog:   https://stolpe.io
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
     <## Checking what architecture your running
     # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
     # Now we also need to verify that's the latest version and then download and install it if the latest version is not installed
@@ -166,6 +218,33 @@ Function Get-RSInstallInfo {
     return $SysInfo
 }
 Function Install-RSVCLib {
+    <#
+        .SYNOPSIS
+        This function is connected and used of the main function for this module, Update-RSWinSoftware.
+        So when you run the Update-RSWinSoftware function this function will be called during the process.
+
+        .DESCRIPTION
+        This function will install VCLibs if it's not installed on the computer.
+
+        .PARAMETER VCLibsOutFile
+        The path to the output file for the VCLibs when downloaded, this is pasted from the main function for this module, Update-RSWinSoftware.
+
+        .PARAMETER VCLibsUrl
+        The url path to where the VCLibs can be downloaded from, this is pasted from the main function for this module, Update-RSWinSoftware.
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        Website/Blog:   https://stolpe.io
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
     [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]
@@ -190,6 +269,27 @@ Function Install-RSVCLib {
     }
 }
 Function Start-RSWinGet {
+    <#
+        .SYNOPSIS
+        This function is connected and used of the main function for this module, Update-RSWinSoftware.
+        So when you run the Update-RSWinSoftware function this function will be called during the process.
+
+        .DESCRIPTION
+        This will start the WinGet.exe upgrade process.
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        Website/Blog:   https://stolpe.io
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
     [CmdletBinding(SupportsShouldProcess)]
     param( )
     Write-OutPut "Checks if any softwares needs to be updated"

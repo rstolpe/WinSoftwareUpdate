@@ -9,14 +9,13 @@
 [string]$apiKey = ""
 #
 # Changes on every build
+[string]$Version = "0.0.1"
 [string]$PowerShellVersion = "5.1"
 [string]$ProcessorArchitecture = "X64, X86, amd64, arm64"
-[string]$LicenseUrl = ""
-[string]$ProjectUrl = ""
+[string]$LicenseUrl = "https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE"
+[string]$ProjectUrl = "https://github.com/rstolpe/WinSoftwareUpdate"
 [string]$ReleaseNotesUrl = ""
-[string]$Description = ""
-#
-[string]$Version = "0.0.1"
+[string]$Description = "This module will help you to update your software on your Windows 10 and Windows 11 machines."
 [bool]$Publish = $false
 
 # Creating ArrayList for use later in the script
