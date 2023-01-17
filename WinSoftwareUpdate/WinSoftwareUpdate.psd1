@@ -2,8 +2,8 @@
 MIT License
 
 Copyright (C) 2023 Robin Stolpe. 
-<{{mail}}>
-<{{website}}>
+<robin@stolpe.io>
+<https://stolpe.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -50,16 +50,16 @@ SOFTWARE.
     Author = 'Robin Stolpe'
 
     # Company or vendor of this module
-    CompanyName = 'Robin Stolpe'
+    CompanyName = 'Stolpe.io'
 
     # Copyright statement for this module
     Copyright = '(c) 2023 Robin Stolpe. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = 'Control vSphere in a fast and easy way'
+    Description = ''
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '7.2'
+    PowerShellVersion = '5.1'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -124,19 +124,19 @@ SOFTWARE.
             # Tags = @()
 
             # A URL to the license for this module.
-            LicenseUri = 'https://github.com/rstolpe/Manage-vSphere/blob/main/LICENSE'
+            LicenseUri = ''
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/rstolpe/Manage-vSphere'
+            ProjectUri = ''
 
             # A URL to an icon representing this module.
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'https://github.com/rstolpe/Manage-vSphere/releases'
+            ReleaseNotes = ''
 
             # Prerelease string of this module
-            Prerelease = 'beta'
+            Prerelease = 'Alpha'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
