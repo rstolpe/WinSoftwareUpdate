@@ -5,7 +5,7 @@
         So when you run the Update-RSWinSoftware function this function will be called during the process.
 
         .DESCRIPTION
-        This will start the WinGet.exe upgrade process.
+        This will function will update all sources for WinGet and then check if any softwares needs to be updated.
 
         .LINK
         https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
@@ -20,9 +20,12 @@
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
+    Write-Output "Making sure that WinGet has the latest source list"
+    WinGet.exe source update --disable-interactivity
+
     Write-OutPut "Checks if any softwares needs to be updated"
     try {
-        WinGet.exe upgrade --all --silent --force --accept-source-agreements --disable-interactivity --include-unknown
+        WinGet.exe upgrade --all --silent --force --accept-source-agreements --include-unknown --disable-interactivity
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {

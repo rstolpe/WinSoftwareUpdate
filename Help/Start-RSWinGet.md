@@ -12,7 +12,7 @@ SYNTAX
     
     
 DESCRIPTION
-    This will start the WinGet.exe upgrade process.
+    This will function will update all sources for WinGet and then check if any softwares needs to be updated.
     
 
 PARAMETERS
