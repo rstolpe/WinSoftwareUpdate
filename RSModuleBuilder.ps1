@@ -14,7 +14,7 @@
 [string]$ProcessorArchitecture = "X64, X86, amd64, arm64"
 [string]$LicenseUrl = "https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE"
 [string]$ProjectUrl = "https://github.com/rstolpe/WinSoftwareUpdate"
-[string]$ReleaseNotesUrl = ""
+[string]$ReleaseNotesUrl = "https://github.com/rstolpe/WinSoftwareUpdate/releases"
 [string]$Description = "This module will help you to update your software on your Windows 10 and Windows 11 machines."
 [bool]$Publish = $false
 

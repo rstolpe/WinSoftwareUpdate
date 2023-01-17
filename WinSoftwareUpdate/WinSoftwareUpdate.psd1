@@ -133,7 +133,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = ''
+            ReleaseNotes = 'https://github.com/rstolpe/WinSoftwareUpdate/releases'
 
             # Prerelease string of this module
             Prerelease = 'Alpha'
