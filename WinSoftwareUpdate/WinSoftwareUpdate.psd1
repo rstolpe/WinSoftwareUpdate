@@ -74,7 +74,7 @@ SOFTWARE.
     # ClrVersion = ''
 
     # Processor architecture (None, X86, Amd64) required by this module
-    # ProcessorArchitecture = ''
+    ProcessorArchitecture = 'X86, Amd64, X64, ARM64'
 
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
