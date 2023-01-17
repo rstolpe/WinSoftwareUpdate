@@ -10,6 +10,7 @@
 #
 # Changes on every build
 [string]$PowerShellVersion = "5.1"
+[string]$ProcessorArchitecture = "X64, X86, amd64, arm64"
 [string]$LicenseUrl = ""
 [string]$ProjectUrl = ""
 [string]$ReleaseNotesUrl = ""
@@ -124,6 +125,7 @@ $PSDfileContent = $PSDfileContent -replace '{{licenseuri}}', $LicenseUrl
 $PSDfileContent = $PSDfileContent -replace '{{projecturi}}', $ProjectUrl
 $PSDfileContent = $PSDfileContent -replace '{{description}}', $Description
 $PSDfileContent = $PSDfileContent -replace '{{powershellversion}}', $PowerShellVersion
+$PSDfileContent = $PSDfileContent -replace '{{processorarchitecture}}}', $ProcessorArchitecture
 
 # If $FunctionPSD are empty, then adding @() instead according to best practices for performance
 if ($null -ne $FunctionPSD) {
