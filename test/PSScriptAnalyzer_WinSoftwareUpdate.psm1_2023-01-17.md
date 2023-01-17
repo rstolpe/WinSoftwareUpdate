@@ -1,5 +1,5 @@
 ﻿
-Line                 : 26
+Line                 : 24
 Column               : 10
 Message              : Function 'Update-RSWinSoftware' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'.
 Extent               : Update-RSWinSoftware
@@ -11,7 +11,7 @@ RuleSuppressionID    :
 SuggestedCorrections : 
 IsSuppressed         : False
 
-Line                 : 308
+Line                 : 306
 Column               : 10
 Message              : Function 'Start-RSWinGet' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'.
 Extent               : Start-RSWinGet

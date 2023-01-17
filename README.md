@@ -41,7 +41,7 @@ Update-RSWinSoftware
   
 Only checks if your softwares are up to date with WinGet. This will not verify if WinGet or Microsoft.VCLibs is up to date.
 ````
-Update-RSWinSoftware
+Update-RSWinSoftware -SkipVersionCheck
 ````
 
 

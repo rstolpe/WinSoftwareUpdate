@@ -2,8 +2,6 @@
     MIT License
 
     Copyright (C) 2023 Robin Stolpe.
-    robin@stolpe.io
-    <https://stolpe.io>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +90,7 @@ Function Update-RSWinSoftware {
 
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
     if ($SkipVersionCheck -eq $false -or $null -eq $SysInfo.WinGet) {
-        Install-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders
+        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders
     }
 
     # If VCLibs are not installed it will get installed
