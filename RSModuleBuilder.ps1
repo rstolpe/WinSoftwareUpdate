@@ -4,11 +4,18 @@
 [string]$Author = "Robin Stolpe"
 [string]$Mail = "robin@stolpe.io"
 [string]$Website = "https://stolpe.io"
+[string]$preRelease = "Alpha"
+[string]$Company = "Stolpe.io"
+[string]$apiKey = ""
+#
+# Changes on every build
+[string]$LicenseUrl = ""
+[string]$ProjectUrl = ""
+[string]$ReleaseNotesUrl = ""
+[string]$Description = ""
 #
 [string]$Version = "0.0.1"
 [bool]$Publish = $false
-[string]$apiKey = ""
-[string]$preRelease = "Alpha"
 
 # Creating ArrayList for use later in the script
 $FunctionPSD = [System.Collections.Generic.List[string]]::new()
@@ -107,9 +114,14 @@ $PSDfileContent = $PSDfileContent -replace '{{manifestDate}}', $TodaysDate
 $PSDfileContent = $PSDfileContent -replace '{{moduleName}}', $ModuleName
 $PSDfileContent = $PSDfileContent -replace '{{year}}', $Year
 $PSDfileContent = $PSDfileContent -replace '{{version}}', $Version
-$PSDfileContent = $PSDfileContent -replace '{{preReleaseTag}}', $preReleaseTag
-$PSMfileContent = $PSMfileContent -replace '{{mail}}', $Mail
-$PSMfileContent = $PSMfileContent -replace '{{website}}', $Website
+$PSDfileContent = $PSDfileContent -replace '{{mail}}', $Mail
+$PSDfileContent = $PSDfileContent -replace '{{website}}', $Website
+$PSDfileContent = $PSDfileContent -replace '{{company}}', $Company
+$PSDfileContent = $PSDfileContent -replace '{{prerelease}}', $preRelease
+$PSDfileContent = $PSDfileContent -replace '{{releasenotes}}', $ReleaseNotesUrl
+$PSDfileContent = $PSDfileContent -replace '{{licenseuri}}', $LicenseUrl
+$PSDfileContent = $PSDfileContent -replace '{{projecturi}}', $ProjectUrl
+$PSDfileContent = $PSDfileContent -replace '{{description}}', $Description
 
 # If $FunctionPSD are empty, then adding @() instead according to best practices for performance
 if ($null -ne $FunctionPSD) {
