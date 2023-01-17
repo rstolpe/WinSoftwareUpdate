@@ -34,4 +34,14 @@ Install-Module -Name WinSoftwareUpdate -Scope AllUsers -Force
 ```
 
 # Update-RSWinSoftware
+Verifies WinGet and Microsoft.VCLibs is installed and up to date, then updates your software with WinGet.
+````
+Update-RSWinSoftware
+````
+  
+Only checks if your softwares are up to date with WinGet. This will not verify if WinGet or Microsoft.VCLibs is up to date.
+````
+Update-RSWinSoftware
+````
+
 

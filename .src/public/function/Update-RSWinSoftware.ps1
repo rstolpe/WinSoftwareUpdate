@@ -12,6 +12,14 @@
         .PARAMETER SkipVersionCheck
         You can decide if you want to skip the WinGet version check, default it set to false. If you use the switch -SkipVersionCheck it will skip to check the version of WinGet.
 
+        .EXAMPLE
+        Update-RSWinSoftware
+        # This command will run the module and check if WinGet and VCLibs are up to date.
+
+        .EXAMPLE
+        Update-RSWinSoftware -SkipVersionCheck
+        # This command will run the module without checking if WinGet and VCLibs are up to date.
+
         .LINK
         https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
 
