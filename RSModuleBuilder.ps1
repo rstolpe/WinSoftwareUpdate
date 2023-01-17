@@ -9,6 +9,7 @@
 [string]$apiKey = ""
 #
 # Changes on every build
+[string]$PowerShellVersion = "5.1"
 [string]$LicenseUrl = ""
 [string]$ProjectUrl = ""
 [string]$ReleaseNotesUrl = ""
@@ -122,6 +123,7 @@ $PSDfileContent = $PSDfileContent -replace '{{releasenotes}}', $ReleaseNotesUrl
 $PSDfileContent = $PSDfileContent -replace '{{licenseuri}}', $LicenseUrl
 $PSDfileContent = $PSDfileContent -replace '{{projecturi}}', $ProjectUrl
 $PSDfileContent = $PSDfileContent -replace '{{description}}', $Description
+$PSDfileContent = $PSDfileContent -replace '{{powershellversion}}', $PowerShellVersion
 
 # If $FunctionPSD are empty, then adding @() instead according to best practices for performance
 if ($null -ne $FunctionPSD) {

@@ -59,7 +59,7 @@ SOFTWARE.
     Description = '{{description}}'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '5.1'
+    PowerShellVersion = '{{powershellversion}}'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -74,7 +74,7 @@ SOFTWARE.
     # ClrVersion = ''
 
     # Processor architecture (None, X86, Amd64) required by this module
-    # ProcessorArchitecture = ''
+    ProcessorArchitecture = 'X86, Amd64, X64, ARM64'
 
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
