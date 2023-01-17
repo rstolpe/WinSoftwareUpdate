@@ -1,7 +1,7 @@
 ![GitHub](https://img.shields.io/github/license/rstolpe/WinSoftwareUpdate?style=plastic) ![GitHub last commit](https://img.shields.io/github/last-commit/rstolpe/WinSoftwareUpdate?style=plastic) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rstolpe/WinSoftwareUpdate?sort=semver&style=plastic)  
   
 # WinSoftwareUpdate
-This module will let you update your installed software with WinGet, many of them but not all. The complete list is published here: [test folder](https://github.com/rstolpe/WinSoftwareUpdate/tree/main/test)  
+This module will let you update your installed software with WinGet, many of them but not all. The complete list is published here: [WinGet Repo](https://github.com/microsoft/winget-cli)  
 This module is perfect for people like me that are to lazy to update every singel software all the time, it's much easier to just run a PowerShell Script.  
 I have added the result from PSScriptAnalyzer in [test folder](https://github.com/rstolpe/WinSoftwareUpdate/tree/main/test) I have some ShouldProcess warnings in this module but that's nothing to worry about really.
 
