@@ -15,7 +15,7 @@
         This is pasted in from the main function for this module, Update-RSWinSoftware.
 
         .PARAMETER WinGet
-        
+
 
         .LINK
         https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md

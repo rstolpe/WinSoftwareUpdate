@@ -1,7 +1,7 @@
 ﻿<#
     MIT License
 
-    Copyright (C) 2023 Robin Stolpe. 
+    Copyright (C) 2023 Robin Stolpe.
     robin@stolpe.io
     <https://stolpe.io>
 
@@ -29,7 +29,7 @@ Function Update-RSWinSoftware {
         This module let users auto update their installed software on Windows 10, 11 with WinGet.
 
         .DESCRIPTION
-        The module will check if WinGet is installed and up to date, if not it will install WinGet or update it.  
+        The module will check if WinGet is installed and up to date, if not it will install WinGet or update it.
         It will also if Microsoft.VCLibs is installed and if not it will install it.
         Besides that the module will check what aritecture the computer is running and download the correct version of Microsoft.VCLibs etc.
         Then it will check if there is any software that needs to be updated and if so it will update them.
@@ -120,7 +120,7 @@ Function Confirm-RSWinGet {
         This is pasted in from the main function for this module, Update-RSWinSoftware.
 
         .PARAMETER WinGet
-        
+
 
         .LINK
         https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md

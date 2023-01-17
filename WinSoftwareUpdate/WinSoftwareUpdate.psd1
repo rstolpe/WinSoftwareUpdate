@@ -1,7 +1,7 @@
 ﻿<#
     MIT License
 
-    Copyright (C) 2023 Robin Stolpe. 
+    Copyright (C) 2023 Robin Stolpe.
     robin@stolpe.io
     <https://stolpe.io>
 
