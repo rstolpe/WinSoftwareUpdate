@@ -1,5 +1,5 @@
 ﻿Function Update-RSWinSoftware {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Decide if you want to skip the WinGet version check, default it set to false")]
         [switch]$SkipVersionCheck = $false
@@ -40,4 +40,7 @@
     if ($null -eq $SysInfo.VCLibs) {
         Install-RSVCLibs -VCLibsUrl $SysInfo.VCLibsUrl -VCLibsOutFile $VCLibsOutFile
     }
+
+    # Starts to check for updates of the installed software
+    Start-RSWinGet
 }

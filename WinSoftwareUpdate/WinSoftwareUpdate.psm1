@@ -24,7 +24,7 @@
     SOFTWARE.
 #>
 Function Update-RSWinSoftware {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Decide if you want to skip the WinGet version check, default it set to false")]
         [switch]$SkipVersionCheck = $false
@@ -65,6 +65,9 @@ Function Update-RSWinSoftware {
     if ($null -eq $SysInfo.VCLibs) {
         Install-RSVCLibs -VCLibsUrl $SysInfo.VCLibsUrl -VCLibsOutFile $VCLibsOutFile
     }
+
+    # Starts to check for updates of the installed software
+    Start-RSWinGet
 }
 Function Confirm-RSWinGet {
     <#
@@ -245,7 +248,7 @@ Function Install-RSVCLib {
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]
         [string]$VCLibsOutFile,
@@ -290,8 +293,6 @@ Function Start-RSWinGet {
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
-    param( )
     Write-OutPut "Checks if any softwares needs to be updated"
     try {
         WinGet.exe upgrade --all --silent --force --accept-source-agreements --disable-interactivity --include-unknown

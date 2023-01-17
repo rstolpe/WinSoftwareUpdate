@@ -3,20 +3,10 @@ NAME
     Update-RSWinSoftware
     
 SYNTAX
-    Update-RSWinSoftware [-SkipVersionCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
+    Update-RSWinSoftware [-SkipVersionCheck] [<CommonParameters>]
     
     
 PARAMETERS
-    -Confirm
-        
-        Required?                    false
-        Position?                    Named
-        Accept pipeline input?       false
-        Parameter set name           (All)
-        Aliases                      cf
-        Dynamic?                     false
-        Accept wildcard characters?  false
-        
     -SkipVersionCheck
         Decide if you want to skip the WinGet version check, default it set to false
         
@@ -25,16 +15,6 @@ PARAMETERS
         Accept pipeline input?       false
         Parameter set name           (All)
         Aliases                      None
-        Dynamic?                     false
-        Accept wildcard characters?  false
-        
-    -WhatIf
-        
-        Required?                    false
-        Position?                    Named
-        Accept pipeline input?       false
-        Parameter set name           (All)
-        Aliases                      wi
         Dynamic?                     false
         Accept wildcard characters?  false
         

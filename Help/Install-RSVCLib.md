@@ -8,7 +8,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Install-RSVCLib [-VCLibsOutFile] <String> [-VCLibsUrl] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+    Install-RSVCLib [-VCLibsOutFile] <String> [-VCLibsUrl] <String> [<CommonParameters>]
     
     
 DESCRIPTION
@@ -30,22 +30,6 @@ PARAMETERS
         
         Required?                    true
         Position?                    2
-        Default value                
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-        
-    -WhatIf [<SwitchParameter>]
-        
-        Required?                    false
-        Position?                    named
-        Default value                
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-        
-    -Confirm [<SwitchParameter>]
-        
-        Required?                    false
-        Position?                    named
         Default value                
         Accept pipeline input?       false
         Accept wildcard characters?  false

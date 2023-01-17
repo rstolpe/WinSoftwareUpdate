@@ -26,7 +26,7 @@
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]
         [string]$VCLibsOutFile,

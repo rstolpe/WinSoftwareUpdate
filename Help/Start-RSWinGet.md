@@ -8,7 +8,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Start-RSWinGet [-WhatIf] [-Confirm] [<CommonParameters>]
+    Start-RSWinGet [<CommonParameters>]
     
     
 DESCRIPTION
@@ -16,22 +16,6 @@ DESCRIPTION
     
 
 PARAMETERS
-    -WhatIf [<SwitchParameter>]
-        
-        Required?                    false
-        Position?                    named
-        Default value                
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-        
-    -Confirm [<SwitchParameter>]
-        
-        Required?                    false
-        Position?                    named
-        Default value                
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-        
     <CommonParameters>
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,

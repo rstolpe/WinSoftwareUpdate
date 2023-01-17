@@ -11,7 +11,7 @@ RuleSuppressionID    :
 SuggestedCorrections : {Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent}
 IsSuppressed         : False
 
-Line                 : 86
+Line                 : 89
 Column               : 1
 Message              : Line has trailing whitespace
 Extent               : System.Management.Automation.Language.ScriptExtent
@@ -23,11 +23,11 @@ RuleSuppressionID    :
 SuggestedCorrections : {Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent}
 IsSuppressed         : False
 
-Line                 : 27
-Column               : 20
-Message              : 'Update-RSWinSoftware' has the ShouldProcess attribute but does not call ShouldProcess/ShouldContinue.
-Extent               : SupportsShouldProcess
-RuleName             : PSShouldProcess
+Line                 : 26
+Column               : 10
+Message              : Function 'Update-RSWinSoftware' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'.
+Extent               : Update-RSWinSoftware
+RuleName             : PSUseShouldProcessForStateChangingFunctions
 Severity             : Warning
 ScriptName           : WinSoftwareUpdate.psm1
 ScriptPath           : /Users/rstolpe/Dev/GitHub/WinSoftwareUpdate/WinSoftwareUpdate/WinSoftwareUpdate.psm1
@@ -35,23 +35,11 @@ RuleSuppressionID    :
 SuggestedCorrections : 
 IsSuppressed         : False
 
-Line                 : 248
-Column               : 20
-Message              : 'Install-RSVCLib' has the ShouldProcess attribute but does not call ShouldProcess/ShouldContinue.
-Extent               : SupportsShouldProcess
-RuleName             : PSShouldProcess
-Severity             : Warning
-ScriptName           : WinSoftwareUpdate.psm1
-ScriptPath           : /Users/rstolpe/Dev/GitHub/WinSoftwareUpdate/WinSoftwareUpdate/WinSoftwareUpdate.psm1
-RuleSuppressionID    : 
-SuggestedCorrections : 
-IsSuppressed         : False
-
-Line                 : 293
-Column               : 20
-Message              : 'Start-RSWinGet' has the ShouldProcess attribute but does not call ShouldProcess/ShouldContinue.
-Extent               : SupportsShouldProcess
-RuleName             : PSShouldProcess
+Line                 : 274
+Column               : 10
+Message              : Function 'Start-RSWinGet' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'.
+Extent               : Start-RSWinGet
+RuleName             : PSUseShouldProcessForStateChangingFunctions
 Severity             : Warning
 ScriptName           : WinSoftwareUpdate.psm1
 ScriptPath           : /Users/rstolpe/Dev/GitHub/WinSoftwareUpdate/WinSoftwareUpdate/WinSoftwareUpdate.psm1
