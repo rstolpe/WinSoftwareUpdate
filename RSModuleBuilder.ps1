@@ -4,7 +4,7 @@
 [string]$Author = "Robin Stolpe"
 [string]$Mail = "robin@stolpe.io"
 [string]$Website = "https://stolpe.io"
-[string]$preRelease = "Alpha"
+[string]$preRelease = ""
 [string]$Company = "Stolpe.io"
 [string]$apiKey = ""
 #
