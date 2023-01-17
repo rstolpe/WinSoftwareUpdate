@@ -11,7 +11,7 @@
 # Changes on every build
 [string]$Version = "0.0.1"
 [string]$PowerShellVersion = "5.1"
-[string]$Tags = "windows, maintenance, autoupdate, autoupdate-script, psmodule, update, winget"
+[string]$Tags = "windows, maintenance, autoupdate, autoupdate-script, psmodule, update, winget, windows10, windows11"
 [string]$ProcessorArchitecture = ""
 [string]$LicenseUrl = "https://github.com/rstolpe/WinSoftwareUpdate/blob/main/LICENSE"
 [string]$ProjectUrl = "https://github.com/rstolpe/WinSoftwareUpdate"
