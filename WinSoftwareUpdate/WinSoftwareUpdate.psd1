@@ -36,7 +36,7 @@
     RootModule = '.\WinSoftwareUpdate.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.1.2'
+    ModuleVersion = '0.1.3'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -134,7 +134,7 @@
             ReleaseNotes = 'https://github.com/rstolpe/WinSoftwareUpdate/releases'
 
             # Prerelease string of this module
-            Prerelease = ''
+            Prerelease = 'Beta'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
