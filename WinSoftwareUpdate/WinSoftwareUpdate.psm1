@@ -326,7 +326,7 @@ Function Start-RSWinGet {
     #>
 
     Write-Output "Making sure that WinGet has the latest source list"
-    WinGet.exe source update --disable-interactivity
+    WinGet.exe source update
 
     Write-OutPut "Checks if any softwares needs to be updated"
     try {

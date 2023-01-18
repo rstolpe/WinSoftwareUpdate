@@ -9,7 +9,7 @@
 [string]$apiKey = ""
 #
 # Changes on every build
-[string]$Version = "0.0.5"
+[string]$Version = "0.0.6"
 [string]$PowerShellVersion = "5.1"
 [string]$Tags = '"windows", "maintenance", "autoupdate", "autoupdate-script", "psmodule", "update", "winget", "windows10", "windows11"'
 [string]$ProcessorArchitecture = ""
