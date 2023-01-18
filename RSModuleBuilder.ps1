@@ -4,12 +4,12 @@
 [string]$Author = "Robin Stolpe"
 [string]$Mail = "robin@stolpe.io"
 [string]$Website = "https://stolpe.io"
-[string]$preRelease = ""
+[string]$preRelease = "beta"
 [string]$Company = "Stolpe.io"
 [string]$apiKey = ""
 #
 # Changes on every build
-[string]$Version = "0.0.9"
+[string]$Version = "0.1.0"
 [string]$PowerShellVersion = "5.1"
 [string]$Tags = '"windows", "maintenance", "autoupdate", "autoupdate-script", "psmodule", "update", "winget", "windows10", "windows11"'
 [string]$ProcessorArchitecture = ""

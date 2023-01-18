@@ -74,7 +74,7 @@
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    if ($WinGet -lt $GitHubInfo.Tag) {
+    if ([Version]$WinGet -lt [Version]$GitHubInfo.Tag) {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
