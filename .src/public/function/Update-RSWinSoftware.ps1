@@ -61,12 +61,16 @@
     #
     [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($Arch).appx"
 
+    # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
+    if ($PSVersionTable.PSVersion.Major -ge 7) {
+        import-module appx -usewindowspowershell
+        Write-Output "== This messages is expected if you are using PowerShell 7 or higher =="
+    }
 
     # Getting system information
     [System.Object]$SysInfo = Get-RSInstallInfo
-
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "0.0.0.0") {
         Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 

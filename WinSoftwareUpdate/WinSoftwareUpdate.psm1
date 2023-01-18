@@ -84,12 +84,16 @@ Function Update-RSWinSoftware {
     #
     [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($Arch).appx"
 
+    # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
+    if ($PSVersionTable.PSVersion.Major -ge 7) {
+        import-module appx -usewindowspowershell
+        Write-Output "== This messages is expected if you are using PowerShell 7 or higher =="
+    }
 
     # Getting system information
     [System.Object]$SysInfo = Get-RSInstallInfo
-
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "0.0.0.0") {
         Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
@@ -175,10 +179,10 @@ Function Confirm-RSWinGet {
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    [version]$vWinGet = [string]$WinGet
+    [version]$vWinGet = [string]$SysInfo.WinGet
     [version]$vGitHub = [string]$GitHubInfo.Tag
 
-    if ([Version]$vWinGet -lt [Version]$vGitHub) {
+    if ([Version]$vWinGet -lt [Version]$vGitHub -or $WinGet -like "1.19.3531.0") {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
@@ -245,9 +249,9 @@ Function Get-RSInstallInfo {
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "no" })
+        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
         VisualCRedistUrl = $VisualCRedistUrl
-        $VCLibsUrl       = $VCLibsUrl
+        VCLibsUrl        = $VCLibsUrl
         Arch             = $Arch
     }
 
