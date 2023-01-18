@@ -89,8 +89,8 @@ Function Update-RSWinSoftware {
     [System.Object]$SysInfo = Get-RSInstallInfo
 
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $null -eq $SysInfo.WinGet) {
-        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
     # If VCLibs are not installed it will get installed
@@ -139,11 +139,11 @@ Function Confirm-RSWinGet {
         [string]$GitHubUrl,
         [Parameter(Mandatory = $true, HelpMessage = "The headers and API version for the GitHub API")]
         [hashtable]$GithubHeaders,
-        [Parameter(Mandatory = $true, HelpMessage = "Information about the installed version of WinGet")]
+        [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
         [string]$WinGet
     )
 
-    if ($null -eq $WinGet) {
+    if ($WinGet -eq "No") {
         Write-Output = "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
@@ -244,7 +244,7 @@ Function Get-RSInstallInfo {
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -Name Microsoft.DesktopAppInstaller).version } catch { $Null })
+        WinGet           = $(try { (Get-AppxPackage -Name Microsoft.DesktopAppInstaller).version } catch { "No" })
         VisualCRedistUrl = $VisualCRedistUrl
         $VCLibsUrl       = $VCLibsUrl
         Arch             = $Arch

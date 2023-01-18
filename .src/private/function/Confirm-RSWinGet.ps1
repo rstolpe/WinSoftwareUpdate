@@ -36,11 +36,11 @@
         [string]$GitHubUrl,
         [Parameter(Mandatory = $true, HelpMessage = "The headers and API version for the GitHub API")]
         [hashtable]$GithubHeaders,
-        [Parameter(Mandatory = $true, HelpMessage = "Information about the installed version of WinGet")]
+        [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
         [string]$WinGet
     )
 
-    if ($null -eq $WinGet) {
+    if ($WinGet -eq "No") {
         Write-Output = "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
