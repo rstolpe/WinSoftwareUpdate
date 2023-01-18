@@ -8,7 +8,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Confirm-RSWinGet [-GitHubUrl] <String> [-GithubHeaders] <Hashtable> [[-WinGet] <String>] [<CommonParameters>]
+    Confirm-RSWinGet [-GitHubUrl] <String> [-GithubHeaders] <Hashtable> [[-WinGet] <Object>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -35,7 +35,7 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
         
-    -WinGet <String>
+    -WinGet <Object>
         
         Required?                    false
         Position?                    3
