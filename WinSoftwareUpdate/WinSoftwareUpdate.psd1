@@ -134,7 +134,7 @@
             ReleaseNotes = 'https://github.com/rstolpe/WinSoftwareUpdate/releases'
 
             # Prerelease string of this module
-            Prerelease = 'beta2'
+            Prerelease = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
