@@ -25,7 +25,7 @@
 
     Write-OutPut "Checks if any softwares needs to be updated"
     try {
-        WinGet.exe upgrade --all --silent --force --accept-source-agreements --include-unknown --disable-interactivity
+        WinGet.exe upgrade --all --silent --force --accept-source-agreements --include-unknown
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {
