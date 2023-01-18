@@ -179,10 +179,10 @@ Function Confirm-RSWinGet {
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    [version]$vWinGet = [string]$WinGet
+    [version]$vWinGet = [string]$SysInfo.WinGet
     [version]$vGitHub = [string]$GitHubInfo.Tag
 
-    if ([Version]$vWinGet -lt [Version]$vGitHub) {
+    if ([Version]$vWinGet -lt [Version]$vGitHub -or $WinGet -like "1.19.3531.0") {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
