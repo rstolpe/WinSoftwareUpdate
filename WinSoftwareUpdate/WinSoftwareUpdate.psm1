@@ -89,7 +89,7 @@ Function Update-RSWinSoftware {
     [System.Object]$SysInfo = Get-RSInstallInfo
 
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "0.0.0.0") {
         Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
@@ -245,9 +245,9 @@ Function Get-RSInstallInfo {
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "no" })
+        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
         VisualCRedistUrl = $VisualCRedistUrl
-        $VCLibsUrl       = $VCLibsUrl
+        VCLibsUrl        = $VCLibsUrl
         Arch             = $Arch
     }
 

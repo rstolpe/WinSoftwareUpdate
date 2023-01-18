@@ -66,7 +66,7 @@
     [System.Object]$SysInfo = Get-RSInstallInfo
 
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "0.0.0.0") {
         Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
