@@ -144,10 +144,10 @@ Function Confirm-RSWinGet {
     )
 
     if ($WinGet -eq "No") {
-        Write-Output = "WinGet is not installed, downloading and installing WinGet..."
+        Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output = "Checking if it's any newer version of WinGet to download and install..."
+        Write-Output "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
@@ -330,7 +330,7 @@ Function Start-RSWinGet {
 
     Write-OutPut "Checks if any softwares needs to be updated"
     try {
-        WinGet.exe upgrade --all --silent --force --accept-source-agreements --include-unknown
+        WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {

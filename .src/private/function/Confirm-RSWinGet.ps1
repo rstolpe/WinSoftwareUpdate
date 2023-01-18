@@ -41,10 +41,10 @@
     )
 
     if ($WinGet -eq "No") {
-        Write-Output = "WinGet is not installed, downloading and installing WinGet..."
+        Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output = "Checking if it's any newer version of WinGet to download and install..."
+        Write-Output "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
