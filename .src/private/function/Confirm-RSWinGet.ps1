@@ -41,10 +41,10 @@
     )
 
     if ($WinGet -eq "No") {
-        Write-Output = "WinGet is not installed, downloading and installing WinGet..."
+        Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output = "Checking if it's any newer version of WinGet to download and install..."
+        Write-Output "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
@@ -74,7 +74,7 @@
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    if ($WinGet -le $GitHubInfo.Tag) {
+    if ($WinGet -lt $GitHubInfo.Tag) {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 

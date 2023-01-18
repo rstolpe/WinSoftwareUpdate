@@ -144,10 +144,10 @@ Function Confirm-RSWinGet {
     )
 
     if ($WinGet -eq "No") {
-        Write-Output = "WinGet is not installed, downloading and installing WinGet..."
+        Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output = "Checking if it's any newer version of WinGet to download and install..."
+        Write-Output "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
@@ -177,7 +177,7 @@ Function Confirm-RSWinGet {
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    if ($WinGet -le $GitHubInfo.Tag) {
+    if ($WinGet -lt $GitHubInfo.Tag) {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
@@ -244,7 +244,7 @@ Function Get-RSInstallInfo {
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -Name Microsoft.DesktopAppInstaller).version } catch { "No" })
+        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" }).version } catch { "no" })
         VisualCRedistUrl = $VisualCRedistUrl
         $VCLibsUrl       = $VCLibsUrl
         Arch             = $Arch
@@ -326,11 +326,11 @@ Function Start-RSWinGet {
     #>
 
     Write-Output "Making sure that WinGet has the latest source list"
-    WinGet.exe source update --disable-interactivity
+    WinGet.exe source update
 
-    Write-OutPut "Checks if any softwares needs to be updated"
+    Write-OutPut "Checks if any softwares needs to be updated`n"
     try {
-        WinGet.exe upgrade --all --silent --force --accept-source-agreements --include-unknown --disable-interactivity
+        WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {
