@@ -1,4 +1,7 @@
-![GitHub](https://img.shields.io/github/license/rstolpe/WinSoftwareUpdate?style=plastic) ![GitHub last commit](https://img.shields.io/github/last-commit/rstolpe/WinSoftwareUpdate?style=plastic) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rstolpe/WinSoftwareUpdate?sort=semver&style=plastic)  
+![GitHub](https://img.shields.io/github/license/rstolpe/WinSoftwareUpdate?style=plastic)  
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rstolpe/WinSoftwareUpdate?sort=semver&style=plastic)  ![Last release](https://img.shields.io/github/release-date/rstolpe/WinSoftwareUpdate?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/rstolpe/WinSoftwareUpdate?style=plastic)  
+![PSGallery downloads](https://img.shields.io/powershellgallery/dt/WinSoftwareUpdate?style=plastic)
   
 # WinSoftwareUpdate
 This module will let you update your installed software with WinGet, many of them but not all. The complete list is published here: [WinGet Repo](https://github.com/microsoft/winget-cli)  
