@@ -37,7 +37,7 @@
         [Parameter(Mandatory = $true, HelpMessage = "The headers and API version for the GitHub API")]
         [hashtable]$GithubHeaders,
         [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
-        [string]$WinGet
+        $WinGet
     )
 
     if ($WinGet -eq "No") {
@@ -57,12 +57,10 @@
             [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $GitHubUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 | Select-Object -Property assets, tag_name
         }
 
-        [string]$latestVersion = $GithubInfoRestData.tag_name.Substring(1)
-
         [System.Object]$GitHubInfo = [PSCustomObject]@{
-            Tag         = $latestVersion
+            Tag         = $($GithubInfoRestData.tag_name.Substring(1))
             DownloadUrl = $GithubInfoRestData.assets | where-object { $_.name -like "*.msixbundle" } | Select-Object -ExpandProperty browser_download_url
-            OutFile     = "$env:TEMP\WinGet_$($latestVersion).msixbundle"
+            OutFile     = "$env:TEMP\WinGet_$($GithubInfoRestData.tag_name.Substring(1)).msixbundle"
         }
     }
     catch {
@@ -74,7 +72,10 @@
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    if ($WinGet -lt $GitHubInfo.Tag) {
+    [version]$vWinGet = [string]$WinGet
+    [version]$vGitHub = [string]$GitHubInfo.Tag
+
+    if ([Version]$vWinGet -lt [Version]$vGitHub) {
         Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 

@@ -8,9 +8,6 @@ This module will let you update your installed software with WinGet, many of the
 This module is perfect for people like me that are to lazy to update every singel software all the time, it's much easier to just run a PowerShell Script.  
 I have added the result from PSScriptAnalyzer in [test folder](https://github.com/rstolpe/WinSoftwareUpdate/tree/main/test) I have some ShouldProcess warnings in this module but that's nothing to worry about really.
 
-# Note
-This module are only supported with PowerShell 5.1 because of limitation for the Appx module.
-
 ## This module can do the following
 - Check what platform your currently running and adapt the downloads for that, if your running x86, amd64, arm64.
 - Make sure that you have WinGet installed and up to date, if it's not the module will install / update it for you to the latest version.
