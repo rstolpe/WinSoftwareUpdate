@@ -66,8 +66,8 @@
     [System.Object]$SysInfo = Get-RSInstallInfo
 
     # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $null -eq $SysInfo.WinGet) {
-        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders
+    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "No") {
+        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
     # If VCLibs are not installed it will get installed

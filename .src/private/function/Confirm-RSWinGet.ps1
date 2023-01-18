@@ -40,7 +40,7 @@
         [string]$WinGet
     )
 
-    if ($null -eq $WinGet) {
+    if ($WinGet -eq "No") {
         Write-Output = "WinGet is not installed, downloading and installing WinGet..."
     }
     else {

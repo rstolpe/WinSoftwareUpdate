@@ -54,7 +54,7 @@
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -Name Microsoft.DesktopAppInstaller).version } catch { $Null })
+        WinGet           = $(try { (Get-AppxPackage -Name Microsoft.DesktopAppInstaller).version } catch { "No" })
         VisualCRedistUrl = $VisualCRedistUrl
         $VCLibsUrl       = $VCLibsUrl
         Arch             = $Arch
