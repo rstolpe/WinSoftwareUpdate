@@ -23,7 +23,7 @@
     Write-Output "Making sure that WinGet has the latest source list"
     WinGet.exe source update
 
-    Write-OutPut "Checks if any softwares needs to be updated"
+    Write-OutPut "Checks if any softwares needs to be updated`n"
     try {
         WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
         Write-Output "Everything is now completed, you can close this window"
