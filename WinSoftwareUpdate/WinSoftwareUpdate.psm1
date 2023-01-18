@@ -181,16 +181,17 @@ Function Confirm-RSWinGet {
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
     [version]$vWinGet = [string]$SysInfo.WinGet
     [version]$vGitHub = [string]$GitHubInfo.Tag
+    if ($WinGet -ne "1.19.3531.0") {
+        if ([Version]$vWinGet -lt [Version]$vGitHub) {
+            Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
+            Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
-    if ([Version]$vWinGet -lt [Version]$vGitHub -or $WinGet -like "1.19.3531.0") {
-        Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
-        Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
-
-        Write-Output "Installing version $($GitHubInfo.Tag) of WinGet..."
-        Add-AppxPackage $($GitHubInfo.OutFile)
-    }
-    else {
-        Write-OutPut "Your already on the latest version of WinGet $($WinGet), no need to update."
+            Write-Output "Installing version $($GitHubInfo.Tag) of WinGet..."
+            Add-AppxPackage $($GitHubInfo.OutFile)
+        }
+        else {
+            Write-OutPut "Your already on the latest version of WinGet $($WinGet), no need to update."
+        }
     }
 }
 Function Get-RSInstallInfo {
@@ -249,7 +250,7 @@ Function Get-RSInstallInfo {
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
         VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.name -like "Microsoft.DesktopAppInstaller" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
         VisualCRedistUrl = $VisualCRedistUrl
         VCLibsUrl        = $VCLibsUrl
         Arch             = $Arch
