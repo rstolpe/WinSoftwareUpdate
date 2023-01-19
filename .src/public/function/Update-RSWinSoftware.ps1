@@ -81,6 +81,6 @@
 
     # Starts to check for updates of the installed software
     Start-RSWinGet
-    
+
     Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }

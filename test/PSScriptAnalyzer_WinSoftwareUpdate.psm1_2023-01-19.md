@@ -11,7 +11,7 @@ RuleSuppressionID    :
 SuggestedCorrections : 
 IsSuppressed         : False
 
-Line                 : 312
+Line                 : 314
 Column               : 10
 Message              : Function 'Start-RSWinGet' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'.
 Extent               : Start-RSWinGet
