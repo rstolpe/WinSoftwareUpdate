@@ -44,7 +44,7 @@
         Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output "Checking if it's any newer version of WinGet to download and install..."
+        Write-OutPut "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
@@ -79,7 +79,7 @@
             Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
             Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
-            Write-Output "Installing version $($GitHubInfo.Tag) of WinGet..."
+            Write-Verbose "Installing version $($GitHubInfo.Tag) of WinGet..."
             Add-AppxPackage $($GitHubInfo.OutFile)
         }
         else {

@@ -64,7 +64,7 @@
     # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
     if ($PSVersionTable.PSVersion.Major -ge 7) {
         import-module appx -usewindowspowershell
-        Write-Output "== This messages is expected if you are using PowerShell 7 or higher =="
+        Write-Output "`n=== This messages is expected if you are using PowerShell 7 or higher ===`n"
     }
 
     # Getting system information
@@ -81,4 +81,6 @@
 
     # Starts to check for updates of the installed software
     Start-RSWinGet
+    
+    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }
