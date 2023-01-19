@@ -87,7 +87,7 @@ Function Update-RSWinSoftware {
     # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
     if ($PSVersionTable.PSVersion.Major -ge 7) {
         import-module appx -usewindowspowershell
-        Write-Output "== This messages is expected if you are using PowerShell 7 or higher =="
+        Write-Output "`n=== This messages is expected if you are using PowerShell 7 or higher ===`n"
     }
 
     # Getting system information
@@ -104,6 +104,8 @@ Function Update-RSWinSoftware {
 
     # Starts to check for updates of the installed software
     Start-RSWinGet
+
+    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }
 Function Confirm-RSWinGet {
     <#
@@ -151,7 +153,7 @@ Function Confirm-RSWinGet {
         Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
-        Write-Output "Checking if it's any newer version of WinGet to download and install..."
+        Write-OutPut "Checking if it's any newer version of WinGet to download and install..."
     }
 
     # Collecting information from GitHub regarding latest version of WinGet
@@ -186,7 +188,7 @@ Function Confirm-RSWinGet {
             Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
             Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
-            Write-Output "Installing version $($GitHubInfo.Tag) of WinGet..."
+            Write-Verbose "Installing version $($GitHubInfo.Tag) of WinGet..."
             Add-AppxPackage $($GitHubInfo.OutFile)
         }
         else {
