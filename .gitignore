@@ -26,7 +26,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
+RSModuleBuilder.ps1
 *.csproj.user
 
 bin/
@@ -34,3 +34,6 @@ obj/
 .vs/
 .vscode/
 .idea/
+license/
+
+WinSoftwareUpdate.psd1.source
