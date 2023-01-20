@@ -26,9 +26,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-RSModuleBuilder.ps1
 *.csproj.user
-
 bin/
 obj/
 .vs/
@@ -37,3 +35,4 @@ obj/
 license/
 
 WinSoftwareUpdate.psd1.source
+RSModuleBuilder.ps1

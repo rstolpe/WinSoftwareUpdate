@@ -1,0 +1,17 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Publish
+        env:
+          PSGALLERY: ${{ secrets.PSGALLERY }}
+        run: .\publish.ps1
+        shell: pwsh
