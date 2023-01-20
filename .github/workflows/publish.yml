@@ -9,9 +9,9 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
       - name: Publish
         env:
-          NUGET_KEY: ${{ secrets.PSGALLERY }}
+          PSGALLERY: ${{ secrets.PSGALLERY }}
         run: .\publish.ps1
         shell: pwsh
