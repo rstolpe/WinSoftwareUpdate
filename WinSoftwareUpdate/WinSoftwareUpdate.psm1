@@ -52,7 +52,6 @@ Function Update-RSWinSoftware {
         Mail:           robin@stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
-        Website/Blog:   https://stolpe.io
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
@@ -87,7 +86,7 @@ Function Update-RSWinSoftware {
 
     # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
     if ($PSVersionTable.PSVersion.Major -ge 7) {
-        import-module appx -usewindowspowershell
+        Import-Module appx -usewindowspowershell
         Write-Output "`n=== This messages is expected if you are using PowerShell 7 or higher ===`n"
     }
 
@@ -135,7 +134,6 @@ Function Confirm-RSWinGet {
         Mail:           robin@stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
-        Website/Blog:   https://stolpe.io
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
@@ -174,10 +172,7 @@ Function Confirm-RSWinGet {
         }
     }
     catch {
-        Write-Error @"
-   "Message: "$($_.Exception.Message)`n
-   "Error Line: "$($_.InvocationInfo.Line)`n
-"@
+        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
         break
     }
 
@@ -194,9 +189,11 @@ Function Confirm-RSWinGet {
         }
         else {
             Write-OutPut "Your already on the latest version of WinGet $($WinGet), no need to update."
+            Continue
         }
     }
 }
+
 Function Get-RSInstallInfo {
     <#
         .SYNOPSIS
@@ -214,7 +211,6 @@ Function Get-RSInstallInfo {
         Mail:           robin@stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
-        Website/Blog:   https://stolpe.io
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
@@ -261,6 +257,7 @@ Function Get-RSInstallInfo {
 
     return $SysInfo
 }
+
 Function Install-RSVCLib {
     <#
         .SYNOPSIS
@@ -284,7 +281,6 @@ Function Install-RSVCLib {
         Mail:           robin@stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
-        Website/Blog:   https://stolpe.io
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
@@ -304,14 +300,11 @@ Function Install-RSVCLib {
         Add-AppxPackage $VCLibsOutFile
     }
     catch {
-        Write-Error "Something went wrong when trying to install Microsoft.VCLibs..."
-        Write-Error @"
-   "Message: "$($_.Exception.Message)`n
-   "Error Line: "$($_.InvocationInfo.Line)`n
-"@
+        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
         break
     }
 }
+
 Function Start-RSWinGet {
     <#
         .SYNOPSIS
@@ -329,23 +322,19 @@ Function Start-RSWinGet {
         Mail:           robin@stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
-        Website/Blog:   https://stolpe.io
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
-    Write-Output "Making sure that WinGet has the latest source list"
+    Write-Output "Making sure that WinGet has the latest source list..."
     WinGet.exe source update
 
-    Write-OutPut "Checks if any softwares needs to be updated`n"
+    Write-OutPut "Checks if any softwares needs to be updated...`n"
     try {
         WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {
-        Write-Error @"
-   "Message: "$($_.Exception.Message)`n
-   "Error Line: "$($_.InvocationInfo.Line)`n
-"@
+        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
     }
 }
