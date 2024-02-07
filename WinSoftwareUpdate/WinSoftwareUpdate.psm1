@@ -22,6 +22,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
+
+# Verify what version of Microsoft.UI.Xaml is installed
+# Check if it needs to be updated and if so download and install it also download it if it's not installed
+#"https://api.github.com/repos/microsoft/microsoft-ui-xaml/releases"
+#Filter out Microsoft.UI.Xaml
+# Fitler out latest 
+#Get versionnumber
+# Download nuget package
+# Change name to .zip
+# Extract .appx
+# Then run Add-AppxPackage -Path .\Microsoft.UI.Xaml.X.X.appx
+    
 Function Update-RSWinSoftware {
     <#
         .SYNOPSIS
@@ -84,9 +96,6 @@ Function Confirm-RSDependency {
     # Collecting systeminformation
     [System.Object]$SysInfo = Get-RSSystemInfo
 
-    # If WinGet is not installed it will be installed and if it's any updates it will be updated
-    Confirm-RSWinGet -WinGet $SysInfo.WinGet
-
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VCLibs) {
         try {
@@ -102,6 +111,9 @@ Function Confirm-RSDependency {
             break
         }
     }
+    
+    # If WinGet is not installed it will be installed and if it's any updates it will be updated
+    Confirm-RSWinGet -WinGet $SysInfo.WinGet
 }
 Function Confirm-RSWinGet {
     <#
