@@ -97,10 +97,8 @@ Function Confirm-RSDependency {
     # Collecting systeminformation
     [System.Object]$SysInfo = Get-RSSystemInfo
 
-    # Installing WinGet if it's not installed
-    if ($SysInfo.WinGet -eq "0.0.0.0") {
-        Confirm-RSWinGet -GitHubUrl $WinGetUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
-    }
+    # If WinGet is not installed it will be installed and if it's any updates it will be updated
+    Confirm-RSWinGet -GitHubUrl $WinGetUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
 
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VCLibs) {
@@ -188,21 +186,19 @@ Function Confirm-RSWinGet {
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    [version]$vWinGet = [string]$SysInfo.WinGet
+    [version]$vWinGet = [string]$WinGet
     [version]$vGitHub = [string]$GitHubInfo.Tag
-    if ($WinGet -ne "1.19.3531.0") {
-        if ([Version]$vWinGet -lt [Version]$vGitHub) {
-            Write-Output "WinGet has a newer version $($GitHubInfo.Tag), downloading and installing it..."
-            Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
+    if ([Version]$vWinGet -lt [Version]$vGitHub) {
+        Write-Output "WinGet has a newer version $($vGitHub), downloading and installing it..."
+        Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
-            Write-Verbose "Installing version $($GitHubInfo.Tag) of WinGet..."
-            Add-AppxPackage $($GitHubInfo.OutFile)
-            Remove-Item $($GitHubInfo.OutFile) -Force
-        }
-        else {
-            Write-OutPut "Your already on the latest version of WinGet $($WinGet), no need to update."
-            Continue
-        }
+        Write-Verbose "Installing version $($vGitHub) of WinGet..."
+        Add-AppxPackage $($GitHubInfo.OutFile)
+        Remove-Item $($GitHubInfo.OutFile) -Force
+    }
+    else {
+        Write-OutPut "Your already on the latest version of WinGet $($vWinGet), no need to update."
+        Continue
     }
 }
 Function Get-RSSystemInfo {
