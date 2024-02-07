@@ -1,7 +1,7 @@
 ﻿<#
 MIT License
 
-Copyright (C) 2023 Robin Stolpe.
+Copyright (C) 2024 Robin Stolpe.
 <https://stolpe.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,16 +33,9 @@ Function Update-RSWinSoftware {
         Besides that the module will check what aritecture the computer is running and download the correct version of Microsoft.VCLibs etc.
         Then it will check if there is any software that needs to be updated and if so it will update them.
 
-        .PARAMETER SkipVersionCheck
-        You can decide if you want to skip the WinGet version check, default it set to false. If you use the switch -SkipVersionCheck it will skip to check the version of WinGet.
-
         .EXAMPLE
         Update-RSWinSoftware
         # This command will run the module and check if WinGet and VCLibs are up to date.
-
-        .EXAMPLE
-        Update-RSWinSoftware -SkipVersionCheck
-        # This command will run the module without checking if WinGet and VCLibs are up to date.
 
         .LINK
         https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
@@ -50,17 +43,12 @@ Function Update-RSWinSoftware {
         .NOTES
         Author:         Robin Stolpe
         Mail:           robin@stolpe.io
+        Website:        https://stolpe.io
         Twitter:        https://twitter.com/rstolpes
         Linkedin:       https://www.linkedin.com/in/rstolpe/
         GitHub:         https://github.com/rstolpe
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
-
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $false, HelpMessage = "Decide if you want to skip the WinGet version check, default it set to false")]
-        [switch]$SkipVersionCheck = $false
-    )
 
     #Check if script was started as Administrator
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -68,44 +56,67 @@ Function Update-RSWinSoftware {
         break
     }
 
-    # =================================
-    #         Static Variables
-    # =================================
-    #
-    # GitHub url for the latest release
-    [string]$GitHubUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-    #
-    # The headers and API version for the GitHub API
-    [hashtable]$GithubHeaders = @{
-        "Accept"               = "application/vnd.github.v3+json"
-        "X-GitHub-Api-Version" = "2022-11-28"
-    }
-    #
-    #
-    [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($Arch).appx"
-
     # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
     if ($PSVersionTable.PSVersion.Major -ge 7) {
         Import-Module appx -usewindowspowershell
         Write-Output "`n=== This messages is expected if you are using PowerShell 7 or higher ===`n"
     }
 
-    # Getting system information
-    [System.Object]$SysInfo = Get-RSInstallInfo
-    # If user has choosen to skip the WinGet version don't check, if WinGet is not installed this will install WinGet anyway.
-    if ($SkipVersionCheck -eq $false -or $SysInfo.WinGet -eq "0.0.0.0") {
-        Confirm-RSWinGet -GitHubUrl $GitHubUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
+    # Check if something needs to be installed or updated
+    Confirm-RSDependency
+
+    # Checking if it's any softwares to update and if so it will update them
+    Write-Output "Making sure that WinGet has the latest source list..."
+    WinGet.exe source update
+
+    Write-OutPut "Checks if any softwares needs to be updated...`n"
+    try {
+        WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
+        Write-Output "Everything is now completed, you can close this window"
+    }
+    catch {
+        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+    }
+
+    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
+}
+Function Confirm-RSDependency {
+    # =================================
+    #         Static Variables
+    # =================================
+    #
+    # GitHub url for the latest release of WinGet
+    [string]$WinGetUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+    #
+    # The headers and API version for the GitHub API
+    [hashtable]$GithubHeaders = @{
+        "Accept"               = "application/vnd.github.v3+json"
+        "X-GitHub-Api-Version" = "2022-11-28"
+    }
+
+    # Collecting systeminformation
+    [System.Object]$SysInfo = Get-RSSystemInfo
+
+    # Installing WinGet if it's not installed
+    if ($SysInfo.WinGet -eq "0.0.0.0") {
+        Confirm-RSWinGet -GitHubUrl $WinGetUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
     }
 
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VCLibs) {
-        Install-RSVCLibs -VCLibsUrl $SysInfo.VCLibsUrl -VCLibsOutFile $VCLibsOutFile
+        try {
+            [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($Arch).appx"
+            Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
+            Invoke-WebRequest -UseBasicParsing -Uri $SysInfo.VCLibsUrl -OutFile $VCLibsOutFile
+
+            Add-AppxPackage $VCLibsOutFile
+        }
+        catch {
+            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+            break
+        }
     }
 
-    # Starts to check for updates of the installed software
-    Start-RSWinGet
-
-    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }
 Function Confirm-RSWinGet {
     <#
@@ -148,7 +159,7 @@ Function Confirm-RSWinGet {
         $WinGet
     )
 
-    if ($WinGet -eq "No") {
+    if ($WinGet -eq "0.0.0.0") {
         Write-Output "WinGet is not installed, downloading and installing WinGet..."
     }
     else {
@@ -193,8 +204,7 @@ Function Confirm-RSWinGet {
         }
     }
 }
-
-Function Get-RSInstallInfo {
+Function Get-RSSystemInfo {
     <#
         .SYNOPSIS
         This function is connected and used of the main function for this module, Update-RSWinSoftware.
@@ -256,85 +266,4 @@ Function Get-RSInstallInfo {
     }
 
     return $SysInfo
-}
-
-Function Install-RSVCLib {
-    <#
-        .SYNOPSIS
-        This function is connected and used of the main function for this module, Update-RSWinSoftware.
-        So when you run the Update-RSWinSoftware function this function will be called during the process.
-
-        .DESCRIPTION
-        This function will install VCLibs if it's not installed on the computer.
-
-        .PARAMETER VCLibsOutFile
-        The path to the output file for the VCLibs when downloaded, this is pasted from the main function for this module, Update-RSWinSoftware.
-
-        .PARAMETER VCLibsUrl
-        The url path to where the VCLibs can be downloaded from, this is pasted from the main function for this module, Update-RSWinSoftware.
-
-        .LINK
-        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
-
-        .NOTES
-        Author:         Robin Stolpe
-        Mail:           robin@stolpe.io
-        Twitter:        https://twitter.com/rstolpes
-        Linkedin:       https://www.linkedin.com/in/rstolpe/
-        GitHub:         https://github.com/rstolpe
-        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
-    #>
-
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $true, HelpMessage = "The path to the output file for the VCLibs when downloaded")]
-        [string]$VCLibsOutFile,
-        [Parameter(Mandatory = $true, HelpMessage = "Url path to where the VCLibs can be downloaded from")]
-        [string]$VCLibsUrl
-    )
-
-    try {
-        Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
-        Invoke-WebRequest -UseBasicParsing -Uri $VCLibsUrl -OutFile $VCLibsOutFile
-
-        Add-AppxPackage $VCLibsOutFile
-    }
-    catch {
-        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-        break
-    }
-}
-
-Function Start-RSWinGet {
-    <#
-        .SYNOPSIS
-        This function is connected and used of the main function for this module, Update-RSWinSoftware.
-        So when you run the Update-RSWinSoftware function this function will be called during the process.
-
-        .DESCRIPTION
-        This will function will update all sources for WinGet and then check if any softwares needs to be updated.
-
-        .LINK
-        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
-
-        .NOTES
-        Author:         Robin Stolpe
-        Mail:           robin@stolpe.io
-        Twitter:        https://twitter.com/rstolpes
-        Linkedin:       https://www.linkedin.com/in/rstolpe/
-        GitHub:         https://github.com/rstolpe
-        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
-    #>
-
-    Write-Output "Making sure that WinGet has the latest source list..."
-    WinGet.exe source update
-
-    Write-OutPut "Checks if any softwares needs to be updated...`n"
-    try {
-        WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
-        Write-Output "Everything is now completed, you can close this window"
-    }
-    catch {
-        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-    }
 }
