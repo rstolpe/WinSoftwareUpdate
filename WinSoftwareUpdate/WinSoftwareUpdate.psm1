@@ -105,18 +105,18 @@ Function Confirm-RSDependency {
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VCLibs) {
         try {
-            [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($Arch).appx"
+            [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
             Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
             Invoke-WebRequest -UseBasicParsing -Uri $SysInfo.VCLibsUrl -OutFile $VCLibsOutFile
 
             Add-AppxPackage $VCLibsOutFile
+            Remove-Item $VCLibsOutFile -Force
         }
         catch {
             Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
             break
         }
     }
-
 }
 Function Confirm-RSWinGet {
     <#
@@ -197,6 +197,7 @@ Function Confirm-RSWinGet {
 
             Write-Verbose "Installing version $($GitHubInfo.Tag) of WinGet..."
             Add-AppxPackage $($GitHubInfo.OutFile)
+            Remove-Item $($GitHubInfo.OutFile) -Force
         }
         else {
             Write-OutPut "Your already on the latest version of WinGet $($WinGet), no need to update."
@@ -248,7 +249,7 @@ Function Get-RSSystemInfo {
         "x86-based PC" {
             [string]$VisualCRedistUrl = "https://aka.ms/vs/17/release/vc_redist.x86.exe"
             [string]$VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx"
-            [string]$Arch = "arm64"
+            [string]$Arch = "x86"
         }
         default {
             Write-Error "Your running a unsupported architecture, exiting now..."
@@ -258,8 +259,8 @@ Function Get-RSSystemInfo {
 
     # Collects everything in pscustomobject to get easier access to the information
     [System.Object]$SysInfo = [PSCustomObject]@{
-        VCLibs           = $(Get-AppxPackage -Name "Microsoft.VCLibs.140.00" -AllUsers | Where-Object { $_.Architecture -eq $Arch })
-        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+        VCLibs           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
         VisualCRedistUrl = $VisualCRedistUrl
         VCLibsUrl        = $VCLibsUrl
         Arch             = $Arch
