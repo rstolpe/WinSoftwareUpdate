@@ -81,24 +81,11 @@ Function Update-RSWinSoftware {
     Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }
 Function Confirm-RSDependency {
-    # =================================
-    #         Static Variables
-    # =================================
-    #
-    # GitHub url for the latest release of WinGet
-    [string]$WinGetUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-    #
-    # The headers and API version for the GitHub API
-    [hashtable]$GithubHeaders = @{
-        "Accept"               = "application/vnd.github.v3+json"
-        "X-GitHub-Api-Version" = "2022-11-28"
-    }
-
     # Collecting systeminformation
     [System.Object]$SysInfo = Get-RSSystemInfo
 
     # If WinGet is not installed it will be installed and if it's any updates it will be updated
-    Confirm-RSWinGet -GitHubUrl $WinGetUrl -GithubHeaders $GithubHeaders -WinGet $SysInfo.WinGet
+    Confirm-RSWinGet -WinGet $SysInfo.WinGet
 
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VCLibs) {
@@ -149,13 +136,22 @@ Function Confirm-RSWinGet {
 
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $true, HelpMessage = "The GitHub API url for the latest release of WinGet")]
-        [string]$GitHubUrl,
-        [Parameter(Mandatory = $true, HelpMessage = "The headers and API version for the GitHub API")]
-        [hashtable]$GithubHeaders,
         [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
         $WinGet
     )
+
+    # =================================
+    #         Static Variables
+    # =================================
+    #
+    # GitHub url for the latest release of WinGet
+    [string]$WinGetUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+    #
+    # The headers and API version for the GitHub API
+    [hashtable]$GithubHeaders = @{
+        "Accept"               = "application/vnd.github.v3+json"
+        "X-GitHub-Api-Version" = "2022-11-28"
+    }
 
     if ($WinGet -eq "0.0.0.0") {
         Write-Output "WinGet is not installed, downloading and installing WinGet..."
@@ -168,10 +164,10 @@ Function Confirm-RSWinGet {
     try {
         # If the computer is running PowerShell 7 or higher, use HTTP/3.0 for the GitHub API in other cases use HTTP/2.0
         if ($PSVersionTable.PSVersion.Major -ge 7) {
-            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $GitHubUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 -HttpVersion 3.0 | Select-Object -Property assets, tag_name
+            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $WinGetUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 -HttpVersion 3.0 | Select-Object -Property assets, tag_name
         }
         else {
-            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $GitHubUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 | Select-Object -Property assets, tag_name
+            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $WinGetUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 | Select-Object -Property assets, tag_name
         }
 
         [System.Object]$GitHubInfo = [PSCustomObject]@{
