@@ -249,7 +249,6 @@ Function Get-RSSystemInfo {
             VersionWinGet    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
             Arch             = $Arch
             Currentpwsh      = $PSVersionTable.PSVersion -as [version]
-            CurrentMajorpwsh = $PSVersionTable.PSVersion.Major
             Temp             = $env:TEMP
             HTTPVersion      = Switch ($PSVersionTable.PSVersion.Major) {
                 7 { "3.0" }
