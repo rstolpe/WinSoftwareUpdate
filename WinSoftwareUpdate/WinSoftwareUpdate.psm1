@@ -120,7 +120,6 @@ Function Confirm-RSDependency {
     # If WinGet is not installed it will be installed and if it's any updates it will be updated
     Confirm-RSWinGet -SysInfo $SysInfo
 }
-
 Function Confirm-RSWinGet {
     <#
         .SYNOPSIS
@@ -155,7 +154,7 @@ Function Confirm-RSWinGet {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
-        $SysInfo
+        [PSCustomObject]$SysInfo
     )
 
     # =================================
