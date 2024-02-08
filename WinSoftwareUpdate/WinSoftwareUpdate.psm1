@@ -83,7 +83,7 @@ Function Update-RSWinSoftware {
 
     Write-OutPut "Checks if any softwares needs to be updated...`n"
     try {
-        WinGet.exe upgrade --all --silent --accept-source-agreements --include-unknown
+        WinGet.exe upgrade --all --silent --accept-source-agreements --accept-package-agreements --include-unknown --uninstall-previous
         Write-Output "Everything is now completed, you can close this window"
     }
     catch {
@@ -97,11 +97,11 @@ Function Confirm-RSDependency {
     [System.Object]$SysInfo = Get-RSSystemInfo
 
     # If VCLibs are not installed it will get installed
-    if ($null -eq $SysInfo.VCLibs) {
+    if ($null -eq $SysInfo.VersionVClibs -or $SysInfo.VersionVClibs -eq "0.0.0.0") {
         try {
-            [string]$VCLibsOutFile = "$env:TEMP\Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
             Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
-            Invoke-WebRequest -UseBasicParsing -Uri $SysInfo.VCLibsUrl -OutFile $VCLibsOutFile
+            [string]$VCLibsOutFile = "$($SysInfo.Temp)\Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
+            Invoke-RestMethod -Uri $SysInfo.UrlVCLibs -OutFile $VCLibsOutFile -HttpVersion $SysInfo.HTTPVersion
 
             Add-AppxPackage $VCLibsOutFile
             Remove-Item $VCLibsOutFile -Force
@@ -111,10 +111,16 @@ Function Confirm-RSDependency {
             break
         }
     }
+
+    # Install VisualCRedist
+    # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
+
+    # Verify if PowerShell 7 need to be updated, if so it will be updated
     
     # If WinGet is not installed it will be installed and if it's any updates it will be updated
-    Confirm-RSWinGet -WinGet $SysInfo.WinGet
+    Confirm-RSWinGet -SysInfo $SysInfo
 }
+
 Function Confirm-RSWinGet {
     <#
         .SYNOPSIS
@@ -149,7 +155,7 @@ Function Confirm-RSWinGet {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
-        $WinGet
+        $SysInfo
     )
 
     # =================================
@@ -165,22 +171,10 @@ Function Confirm-RSWinGet {
         "X-GitHub-Api-Version" = "2022-11-28"
     }
 
-    if ($WinGet -eq "0.0.0.0") {
-        Write-Output "WinGet is not installed, downloading and installing WinGet..."
-    }
-    else {
-        Write-OutPut "Checking if it's any newer version of WinGet to download and install..."
-    }
-
     # Collecting information from GitHub regarding latest version of WinGet
     try {
         # If the computer is running PowerShell 7 or higher, use HTTP/3.0 for the GitHub API in other cases use HTTP/2.0
-        if ($PSVersionTable.PSVersion.Major -ge 7) {
-            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $WinGetUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 -HttpVersion 3.0 | Select-Object -Property assets, tag_name
-        }
-        else {
-            [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $WinGetUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 | Select-Object -Property assets, tag_name
-        }
+        [System.Object]$GithubInfoRestData = Invoke-RestMethod -Uri $WinGetUrl -Method Get -Headers $GithubHeaders -TimeoutSec 10 -HttpVersion $SysInfo.HTTPVersion | Select-Object -Property assets, tag_name
 
         [System.Object]$GitHubInfo = [PSCustomObject]@{
             Tag         = $($GithubInfoRestData.tag_name.Substring(1))
@@ -194,7 +188,7 @@ Function Confirm-RSWinGet {
     }
 
     # Checking if the installed version of WinGet are the same as the latest version of WinGet
-    [version]$vWinGet = [string]$WinGet
+    [version]$vWinGet = [string]$SysInfo.WinGet
     [version]$vGitHub = [string]$GitHubInfo.Tag
     if ([Version]$vWinGet -lt [Version]$vGitHub) {
         Write-Output "WinGet has a newer version $($vGitHub), downloading and installing it..."
@@ -209,6 +203,7 @@ Function Confirm-RSWinGet {
         Continue
     }
 }
+
 Function Get-RSSystemInfo {
     <#
         .SYNOPSIS
@@ -230,45 +225,37 @@ Function Get-RSSystemInfo {
         PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
     #>
 
-    <## Checking what architecture your running
-    # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
-    # Now we also need to verify that's the latest version and then download and install it if the latest version is not installed
-    # When this is added no need to install Microsoft.VCLibs as it's included in the VisualCRedist
-    # Don't have the time for it now but this will be added later#>
-
-
     # Getting architecture of the computer and adapting it after the right download links
     [string]$Architecture = $(Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty SystemType)
-    switch ($Architecture) {
-        "x64-based PC" {
-            [string]$VisualCRedistUrl = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
-            [string]$VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-            [string]$Arch = "x64"
-        }
-        "ARM64-based PC" {
-            [string]$VisualCRedistUrl = "https://aka.ms/vs/17/release/vc_redist.arm64.exe"
-            [string]$VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.arm64.14.00.Desktop.appx"
-            [string]$Arch = "arm64"
-        }
-        "x86-based PC" {
-            [string]$VisualCRedistUrl = "https://aka.ms/vs/17/release/vc_redist.x86.exe"
-            [string]$VCLibsUrl = "https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx"
-            [string]$Arch = "x86"
-        }
-        default {
-            Write-Error "Your running a unsupported architecture, exiting now..."
-            break
-        }
+    
+    [string]$Arch = Switch ($Architecture) {
+        "x64-based PC" { "x64" }
+        "ARM64-based PC" { "arm64" }
+        "x86-based PC" { "x86" }
+        default { "Unsupported" }
     }
 
-    # Collects everything in pscustomobject to get easier access to the information
-    [System.Object]$SysInfo = [PSCustomObject]@{
-        WinGet           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-        VCLibs           = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-        VisualCRedistUrl = $VisualCRedistUrl
-        VCLibsUrl        = $VCLibsUrl
-        Arch             = $Arch
+    if ($Arch -eq "Unsupported") {
+        throw "Your running a unsupported architecture, exiting now..."
+        break
     }
-
-    return $SysInfo
+    else {
+        # Collects everything in pscustomobject to get easier access to the information
+        # Need to redothis to hashtable
+        [System.Object]$SysInfo = [PSCustomObject]@{
+            VersionVClibs    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+            UrlVClibs        = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
+            UrlVisualCRedist = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
+            VersionWinGet    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+            Arch             = "x64"
+            Currentpwsh      = $PSVersionTable.PSVersion -as [version]
+            CurrentMajorpwsh = $PSVersionTable.PSVersion.Major
+            Temp             = $env:TEMP
+            HTTPVersion      = Switch ($PSVersionTable.PSVersion.Major) {
+                7 { "3.0" }
+                default { "2.0" }
+            }
+        }
+        return $SysInfo
+    }
 }
