@@ -199,10 +199,13 @@ Function Confirm-rsPowerShell7 {
         [Parameter(Mandatory = $false, HelpMessage = ".")]
         [PSCustomObject]$SysInfo
     )
-
+    # =================================
+    #         Static Variables
+    # =================================
+    #
+    # URL to the PowerShell GitHub raw content
     [string]$pwshurl = "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
 
-    
     $GetMetaData = Invoke-RestMethod -Uri $pwshurl -HttpVersion $SysInfo.HTTPVersion
     [version]$Release = $GetMetaData.StableReleaseTag -replace '^v'
     $PackageName = "PowerShell-${Release}-win-x64.msi"
