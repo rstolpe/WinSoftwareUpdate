@@ -33,93 +33,7 @@ SOFTWARE.
 # Change name to .zip
 # Extract .appx
 # Then run Add-AppxPackage -Path .\Microsoft.UI.Xaml.X.X.appx
-    
-Function Update-RSWinSoftware {
-    <#
-        .SYNOPSIS
-        This module let users auto update their installed software on Windows 10, 11 with WinGet.
 
-        .DESCRIPTION
-        The module will check if WinGet is installed and up to date, if not it will install WinGet or update it.
-        It will also if Microsoft.VCLibs is installed and if not it will install it.
-        Besides that the module will check what aritecture the computer is running and download the correct version of Microsoft.VCLibs etc.
-        Then it will check if there is any software that needs to be updated and if so it will update them.
-
-        .EXAMPLE
-        Update-RSWinSoftware
-        # This command will run the module and check if WinGet and VCLibs are up to date.
-
-        .LINK
-        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
-
-        .NOTES
-        Author:         Robin Stolpe
-        Mail:           robin@stolpe.io
-        Website:        https://stolpe.io
-        Twitter:        https://twitter.com/rstolpes
-        Linkedin:       https://www.linkedin.com/in/rstolpe/
-        GitHub:         https://github.com/rstolpe
-        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
-    #>
-
-    #Check if script was started as Administrator
-    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
-        Write-Error ("{0} needs admin privileges, exiting now...." -f $MyInvocation.MyCommand)
-        break
-    }
-
-    # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
-    if ($PSVersionTable.PSVersion.Major -ge 7) {
-        Import-Module appx -usewindowspowershell
-        Write-Output "`n=== This messages is expected if you are using PowerShell 7 or higher ===`n"
-    }
-
-    # Check if something needs to be installed or updated
-    Confirm-RSDependency
-
-    # Checking if it's any softwares to update and if so it will update them
-    Write-Output "Making sure that WinGet has the latest source list..."
-    WinGet.exe source update
-
-    Write-OutPut "Checks if any softwares needs to be updated...`n"
-    try {
-        WinGet.exe upgrade --all --silent --accept-source-agreements --accept-package-agreements --include-unknown --uninstall-previous
-        Write-Output "Everything is now completed, you can close this window"
-    }
-    catch {
-        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-    }
-
-    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
-}
-Function Confirm-RSDependency {
-    # Collecting systeminformation
-    [System.Object]$SysInfo = Get-RSSystemInfo
-
-    # If VCLibs are not installed it will get installed
-    if ($null -eq $SysInfo.VersionVClibs -or $SysInfo.VersionVClibs -eq "0.0.0.0") {
-        try {
-            Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
-            [string]$VCLibsOutFile = "$($SysInfo.Temp)\Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
-            Invoke-RestMethod -Uri $SysInfo.UrlVCLibs -OutFile $VCLibsOutFile -HttpVersion $SysInfo.HTTPVersion
-
-            Add-AppxPackage $VCLibsOutFile
-            Remove-Item $VCLibsOutFile -Force
-        }
-        catch {
-            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-            break
-        }
-    }
-
-    # Install VisualCRedist
-    # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
-
-    # Verify if PowerShell 7 need to be updated, if so it will be updated
-    
-    # If WinGet is not installed it will be installed and if it's any updates it will be updated
-    Confirm-RSWinGet -SysInfo $SysInfo
-}
 Function Confirm-RSWinGet {
     <#
         .SYNOPSIS
@@ -202,8 +116,7 @@ Function Confirm-RSWinGet {
         Continue
     }
 }
-
-Function Get-RSSystemInfo {
+Function Get-rsSystemInfo {
     <#
         .SYNOPSIS
         This function is connected and used of the main function for this module, Update-RSWinSoftware.
@@ -239,6 +152,22 @@ Function Get-RSSystemInfo {
         break
     }
     else {
+
+        # Verify verifying what ps version that's running and checks if pwsh7 is installed
+        if ($PSVersionTable.PSVersion.Major -lt 7) {
+            $VerifyPWSHInstallPath = Test-Path -Path "C:\Program Files\PowerShell\7\pwsh.exe"
+
+            if ($VerifyPWSHInstallPath -eq $true) {
+                [version]$CurrentPSVersion = (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
+            }
+            else {
+                [version]$CurrentPSVersion = $PSVersionTable.PSVersion
+            }
+        }
+        else {
+            [version]$CurrentPSVersion = $PSVersionTable.PSVersion
+        }
+
         # Collects everything in pscustomobject to get easier access to the information
         # Need to redothis to hashtable
         [System.Object]$SysInfo = [PSCustomObject]@{
@@ -247,7 +176,7 @@ Function Get-RSSystemInfo {
             UrlVisualCRedist = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
             VersionWinGet    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
             Arch             = $Arch
-            Currentpwsh      = $PSVersionTable.PSVersion -as [version]
+            VersionPS        = [version]$CurrentPSVersion
             Temp             = $env:TEMP
             HTTPVersion      = Switch ($PSVersionTable.PSVersion.Major) {
                 7 { "3.0" }
@@ -256,4 +185,138 @@ Function Get-RSSystemInfo {
         }
         return $SysInfo
     }
+}
+Function Confirm-rsPowerShell7 {
+    <#
+        .SYNOPSIS
+        .DESCRIPTION
+        .PARAMETER SID
+        .PARAMETER Trim
+        .EXAMPLE
+    #>
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory = $false, HelpMessage = ".")]
+        [PSCustomObject]$SysInfo
+    )
+
+    [string]$pwshurl = "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
+
+    
+    $GetMetaData = Invoke-RestMethod -Uri $pwshurl -HttpVersion $SysInfo.HTTPVersion
+    [version]$Release = $GetMetaData.StableReleaseTag -replace '^v'
+    $PackageName = "PowerShell-${Release}-win-x64.msi"
+    $PackagePath = Join-Path -Path $env:TEMP -ChildPath $PackageName
+    $downloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v${Release}/${PackageName}"
+
+    # Check if powershell needs to update or not
+    if ($SysInfo.VersionPS -lt $Release) {
+
+        # Download latest MSI installer for PowerShell
+        Invoke-RestMethod -Uri $downloadURL -OutFile $PackagePath
+
+        # Setting arguments for the installation
+        $ArgumentList = @("/i", $packagePath, "/quiet")
+
+        $InstallProcess = Start-Process msiexec -ArgumentList $ArgumentList -Wait -PassThru
+        if ($InstallProcess.exitcode -ne 0) {
+            throw "Quiet install failed, please ensure you have administrator rights"
+        }
+        else {
+            Write-Output "PowerShell 7 have been updated from $($SysInfo.VersionPS) to $($Release), you need to restart PowerShell to use the new version"
+        }
+
+        # Removes the installation file
+        Remove-Item -Path $PackagePath -Force -ErrorAction SilentlyContinue
+    }
+}
+Function Confirm-RSDependency {
+    # Collecting systeminformation
+    [System.Object]$SysInfo = Get-RSSystemInfo
+
+    # If VCLibs are not installed it will get installed
+    if ($null -eq $SysInfo.VersionVClibs -or $SysInfo.VersionVClibs -eq "0.0.0.0") {
+        try {
+            Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
+            [string]$VCLibsOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
+            Invoke-RestMethod -Uri $SysInfo.UrlVCLibs -OutFile $VCLibsOutFile -HttpVersion $SysInfo.HTTPVersion
+
+            Add-AppxPackage $VCLibsOutFile
+            Remove-Item $VCLibsOutFile -Force
+        }
+        catch {
+            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+            break
+        }
+    }
+
+    # Install VisualCRedist
+    # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
+
+    # If PowerShell 7 is installed on the system then it will check if it's the latest version and if not it will update it
+    [version]$pwsh7 = "7.0.0.0"
+    if ($SysInfo.VersionPS -ge $pwsh7) {
+        Confirm-rsPowerShell7 -SysInfo $SysInfo
+    }
+    
+    # If WinGet is not installed it will be installed and if it's any updates it will be updated
+    Confirm-RSWinGet -SysInfo $SysInfo
+}
+Function Update-RSWinSoftware {
+    <#
+        .SYNOPSIS
+        This module let users auto update their installed software on Windows 10, 11 with WinGet.
+
+        .DESCRIPTION
+        The module will check if WinGet is installed and up to date, if not it will install WinGet or update it.
+        It will also if Microsoft.VCLibs is installed and if not it will install it.
+        Besides that the module will check what aritecture the computer is running and download the correct version of Microsoft.VCLibs etc.
+        Then it will check if there is any software that needs to be updated and if so it will update them.
+
+        .EXAMPLE
+        Update-RSWinSoftware
+        # This command will run the module and check if WinGet and VCLibs are up to date.
+
+        .LINK
+        https://github.com/rstolpe/WinSoftwareUpdate/blob/main/README.md
+
+        .NOTES
+        Author:         Robin Stolpe
+        Mail:           robin@stolpe.io
+        Website:        https://stolpe.io
+        Twitter:        https://twitter.com/rstolpes
+        Linkedin:       https://www.linkedin.com/in/rstolpe/
+        GitHub:         https://github.com/rstolpe
+        PSGallery:      https://www.powershellgallery.com/profiles/rstolpe
+    #>
+
+    #Check if script was started as Administrator
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
+        Write-Error ("{0} needs admin privileges, exiting now...." -f $MyInvocation.MyCommand)
+        break
+    }
+
+    # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
+    if ($PSVersionTable.PSVersion.Major -ge 7) {
+        Import-Module appx -usewindowspowershell
+        Write-Output "This messages is expected if you are using PowerShell 7 or higher`n"
+    }
+
+    # Check if something needs to be installed or updated
+    Confirm-RSDependency
+
+    # Checking if it's any softwares to update and if so it will update them
+    Write-Output "Making sure that WinGet has the latest source list..."
+    WinGet.exe source update
+
+    Write-OutPut "Checks if any softwares needs to be updated...`n"
+    try {
+        WinGet.exe upgrade --all --silent --accept-source-agreements --accept-package-agreements --include-unknown --uninstall-previous
+        Write-Output "Everything is now completed, you can close this window"
+    }
+    catch {
+        Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+    }
+
+    Write-OutPut "`n=== \\\ Script Finished /// ===`n"
 }
