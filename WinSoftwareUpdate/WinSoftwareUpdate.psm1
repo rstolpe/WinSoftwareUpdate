@@ -289,6 +289,84 @@ Function Confirm-RSDependency {
     # If WinGet is not installed it will be installed and if it's any updates it will be updated
     Confirm-RSWinGet -SysInfo $SysInfo
 }
+Function Get-rsPowerShell7 {
+    <#
+        .SYNOPSIS
+        .DESCRIPTION
+        .PARAMETER SID
+        .PARAMETER Trim
+        .EXAMPLE
+    #>
+
+    $MissingPWSH7 = $false
+
+    if ($PSVersionTable.PSVersion.Major -lt 7) {
+        $CheckpwshVersion = Test-Path -Path "C:\Program Files\PowerShell\7\pwsh.exe"
+
+        if ($CheckpwshVersion -eq $true) {
+            [version]$CurrentVersion = (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
+        }
+        else {
+            [version]$CurrentVersion = $PSVersionTable.PSVersion
+            $MissingPWSH7 = $true
+        }
+    }
+    else {
+        [version]$CurrentVersion = $PSVersionTable.PSVersion
+    }
+
+    [version]$pwshV7 = "7.0.0.0"
+    if ($CurrentVersion -lt $pwshV7) {
+        $GetMetaData = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
+    }
+    else {
+        $GetMetaData = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json" -HttpVersion 3.0
+    }
+
+    [version]$Release = $GetMetaData.StableReleaseTag -replace '^v'
+    $PackageName = "PowerShell-${Release}-win-x64.msi"
+    $PackagePath = Join-Path -Path $env:TEMP -ChildPath $PackageName
+    $downloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v${Release}/${PackageName}"
+
+    if ($CurrentVersion -lt $pwshV7) {
+        $MSIArguments = @()
+        $MSIArguments = @("/i", $packagePath, "/quiet")
+        $MSIArguments += "ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1"
+        $MSIArguments += "ENABLE_PSREMOTING=1"
+        $MSIArguments += "ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1"
+        $MSIArguments += "REGISTER_MANIFEST=1"
+        $MSIArguments += "ADD_PATH=1"
+    }
+
+    # Check if powershell needs to update or not
+    if ($CurrentVersion -lt $Release) {
+        # Download latest MSI installer for PowerShell
+        Invoke-RestMethod -Uri $downloadURL -OutFile $PackagePath
+
+        # Setting arguments
+        if ($null -ne $MSIArguments) {
+            $ArgumentList = $MSIArguments
+        }
+        else {
+            $ArgumentList = @("/i", $packagePath, "/quiet")
+        }
+
+        $InstallProcess = Start-Process msiexec -ArgumentList $ArgumentList -Wait -PassThru
+        if ($InstallProcess.exitcode -ne 0) {
+            throw "Quiet install failed, please ensure you have administrator rights"
+        }
+        else {
+            if ($MissingPWSH7 -eq $true) {
+                Write-Output "PowerShell 7 was not installed on your system, PowerShell 7 have been installed and you need to restart PowerShell to use the new version"
+            } 
+            else {
+                Write-Output "PowerShell 7 have been updated from $($CurrentVersion) to $($Release), you need to restart PowerShell to use the new version"
+            }
+        }
+        # Removes the installation file
+        Remove-Item -Path $PackagePath -Force -ErrorAction SilentlyContinue
+    }
+}
 Function Update-RSWinSoftware {
     <#
         .SYNOPSIS
@@ -327,13 +405,15 @@ Function Update-RSWinSoftware {
     if ($PSVersionTable.PSVersion.Major -ge 7) {
         Import-Module appx -usewindowspowershell
         Write-Output "This messages is expected if you are using PowerShell 7 or higher`n"
+        Write-Output "Checking if PowerShell 7 have any updates..."
+        Get-rsPowerShell7
     }
 
     # Check if something needs to be installed or updated
     Confirm-RSDependency
 
     # Checking if it's any softwares to update and if so it will update them
-    Write-Output "Making sure that WinGet has the latest source list..."
+    Write-Output "Updating Winget's source list..."
     WinGet.exe source update
 
     Write-OutPut "Checks if any softwares needs to be updated...`n"
