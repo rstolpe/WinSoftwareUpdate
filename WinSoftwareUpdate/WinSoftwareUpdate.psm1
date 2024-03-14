@@ -202,53 +202,6 @@ Function Get-rsSystemInfo {
         return $SysInfo
     }
 }
-Function Confirm-rsPowerShell7 {
-    <#
-        .SYNOPSIS
-        .DESCRIPTION
-        .PARAMETER SID
-        .PARAMETER Trim
-        .EXAMPLE
-    #>
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $false, HelpMessage = ".")]
-        [PSCustomObject]$SysInfo
-    )
-    # =================================
-    #         Static Variables
-    # =================================
-    #
-    # URL to the PowerShell GitHub raw content
-    [string]$pwshurl = "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
-
-    $GetMetaData = Invoke-RestMethod -Uri $pwshurl -HttpVersion $SysInfo.HTTPVersion
-    [version]$Release = $GetMetaData.StableReleaseTag -replace '^v'
-    $PackageName = "PowerShell-${Release}-win-x64.msi"
-    $PackagePath = Join-Path -Path $env:TEMP -ChildPath $PackageName
-    $downloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v${Release}/${PackageName}"
-
-    # Check if powershell needs to update or not
-    if ($SysInfo.VersionPS -lt $Release) {
-
-        # Download latest MSI installer for PowerShell
-        Invoke-RestMethod -Uri $downloadURL -OutFile $PackagePath
-
-        # Setting arguments for the installation
-        $ArgumentList = @("/i", $packagePath, "/quiet")
-
-        $InstallProcess = Start-Process msiexec -ArgumentList $ArgumentList -Wait -PassThru
-        if ($InstallProcess.exitcode -ne 0) {
-            throw "Quiet install failed, please ensure you have administrator rights"
-        }
-        else {
-            Write-Output "PowerShell 7 have been updated from $($SysInfo.VersionPS) to $($Release), you need to restart PowerShell to use the new version"
-        }
-
-        # Removes the installation file
-        Remove-Item -Path $PackagePath -Force -ErrorAction SilentlyContinue
-    }
-}
 Function Confirm-RSDependency {
     # Collecting systeminformation
     $SysInfo = Get-RSSystemInfo
@@ -265,7 +218,7 @@ Function Confirm-RSDependency {
                     Invoke-RestMethod -Uri $DepInfo.url -OutFile $DepOutFile -HttpVersion $SysInfo.HTTPVersion
 
                     Write-Verbose "Installing $($_info)..."
-                    Add-AppxPackage $DepOutFile
+                    Add-AppxPackage -Path $DepOutFile
                     Write-Verbose "Deleting $($_info) downloaded installation file..."
                     Remove-Item $DepOutFile -Force
                 }
@@ -289,7 +242,7 @@ Function Confirm-RSDependency {
     # If WinGet is not installed it will be installed and if it's any updates it will be updated
     Confirm-RSWinGet -SysInfo $SysInfo
 }
-Function Get-rsPowerShell7 {
+Function Confirm-rsPowerShell7 {
     <#
         .SYNOPSIS
         .DESCRIPTION
@@ -405,8 +358,6 @@ Function Update-RSWinSoftware {
     if ($PSVersionTable.PSVersion.Major -ge 7) {
         Import-Module appx -UseWindowsPowershell
         Write-Output "This messages is expected if you are using PowerShell 7 or higher`n"
-        Write-Output "Checking if PowerShell 7 have any updates..."
-        Get-rsPowerShell7
     }
 
     # Check if something needs to be installed or updated
