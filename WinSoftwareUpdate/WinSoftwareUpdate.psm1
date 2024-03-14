@@ -114,7 +114,7 @@ Function Confirm-RSWinGet {
         Remove-Item $($GitHubInfo.OutFile) -Force
     }
     else {
-        Write-OutPut "Your already on the latest version of WinGet $($vWinGet), no need to update."
+        Write-Verbose "Your already on the latest version of WinGet $($vWinGet), no need to update."
         Continue
     }
 }
@@ -176,7 +176,7 @@ Function Get-rsSystemInfo {
             VersionVClibs        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
             UrlVClibs            = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
             VersionMicrosoftXaml = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            urlMicrosoftXaml     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
+            UrlMicrosoftXaml     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
             VersionVisualCRedist = ""
             UrlVisualCRedist     = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
             VersionWinGet        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
@@ -247,9 +247,12 @@ Function Confirm-RSDependency {
         try {
             Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
             [string]$VCLibsOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
+            Write-Verbose "Downloading Microsoft.VCLibs..."
             Invoke-RestMethod -Uri $SysInfo.UrlVCLibs -OutFile $VCLibsOutFile -HttpVersion $SysInfo.HTTPVersion
 
+            Write-Verbose "Installing Microsoft.VCLibs..."
             Add-AppxPackage $VCLibsOutFile
+            Write-Verbose "Deleting Microsoft.VCLibs downloaded installation file..."
             Remove-Item $VCLibsOutFile -Force
         }
         catch {
@@ -258,9 +261,23 @@ Function Confirm-RSDependency {
         }
     }
 
-    # Install Microsoft Desktop App Installer
+    # If VCLibs are not installed it will get installed
+    if ($null -eq $SysInfo.VersionMicrosoftXaml -or $SysInfo.VersionMicrosoftXaml -eq "0.0.0.0") {
+        try {
+            Write-Output "Microsoft.UI.Xaml is not installed, downloading and installing it now..."
+            [string]$XamlOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.UI.Xaml.2.8.$($SysInfo.Arch).appx"
+            Invoke-RestMethod -Uri $SysInfo.UrlMicrosoftXaml -OutFile $XamlOutFile -HttpVersion $SysInfo.HTTPVersion
 
-    # Install xml thing
+            Add-AppxPackage $XamlOutFile
+            Remove-Item $XamlOutFile -Force
+        }
+        catch {
+            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+            break
+        }
+    }
+
+    # Install Microsoft Desktop App Installer
 
     # Install VisualCRedist
     # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
