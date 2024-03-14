@@ -36,7 +36,7 @@
     RootModule        = '.\WinSoftwareUpdate.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.6'
+    ModuleVersion     = '1.0.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
