@@ -277,8 +277,6 @@ Function Confirm-RSDependency {
         }
     }
 
-    # Install Microsoft Desktop App Installer
-
     # Install VisualCRedist
     # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
 
