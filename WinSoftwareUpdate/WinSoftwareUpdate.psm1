@@ -68,7 +68,7 @@ Function Confirm-RSWinGet {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false, HelpMessage = "Information about the installed version of WinGet")]
-        [PSCustomObject]$SysInfo
+        $SysInfo
     )
 
     # =================================
@@ -154,40 +154,49 @@ Function Get-rsSystemInfo {
         break
     }
     else {
-
         # Verify verifying what ps version that's running and checks if pwsh7 is installed
-        if ($PSVersionTable.PSVersion.Major -lt 7) {
+        [version]$CurrentPSVersion = if ($PSVersionTable.PSVersion.Major -lt 7) {
             $VerifyPWSHInstallPath = Test-Path -Path "C:\Program Files\PowerShell\7\pwsh.exe"
 
             if ($VerifyPWSHInstallPath -eq $true) {
-                [version]$CurrentPSVersion = (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
+                (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
             }
             else {
-                [version]$CurrentPSVersion = $PSVersionTable.PSVersion
+                $PSVersionTable.PSVersion
             }
         }
         else {
-            [version]$CurrentPSVersion = $PSVersionTable.PSVersion
+            $PSVersionTable.PSVersion
         }
 
         # Collects everything in pscustomobject to get easier access to the information
         # Need to redothis to hashtable
-        [System.Object]$SysInfo = [PSCustomObject]@{
-            VersionVClibs        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            UrlVClibs            = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
-            VersionMicrosoftXaml = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            UrlMicrosoftXaml     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
-            VersionVisualCRedist = ""
-            UrlVisualCRedist     = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
-            VersionWinGet        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            Arch                 = $Arch
-            VersionPS            = [version]$CurrentPSVersion
-            Temp                 = $env:TEMP
-            HTTPVersion          = Switch ($PSVersionTable.PSVersion.Major) {
+        $SysInfo = [ordered]@{
+            Software    = [ordered]@{
+                VClibs        = [ordered]@{
+                    Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+                    Url     = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
+                }
+                MicrosoftXaml = [ordered]@{
+                    Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+                    Url     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
+                }
+                WinGet        = [ordered]@{
+                    Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+                    Url     = ""
+                }
+            }
+            #VersionVisualCRedist = ""
+            #UrlVisualCRedist     = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
+            Arch        = $Arch
+            VersionPS   = [version]$CurrentPSVersion
+            Temp        = $env:TEMP
+            HTTPVersion = Switch ($PSVersionTable.PSVersion.Major) {
                 7 { "3.0" }
                 default { "2.0" }
             }
         }
+
         return $SysInfo
     }
 }
@@ -240,7 +249,7 @@ Function Confirm-rsPowerShell7 {
 }
 Function Confirm-RSDependency {
     # Collecting systeminformation
-    [System.Object]$SysInfo = Get-RSSystemInfo
+    $SysInfo = Get-RSSystemInfo
 
     # If VCLibs are not installed it will get installed
     if ($null -eq $SysInfo.VersionVClibs -or $SysInfo.VersionVClibs -eq "0.0.0.0") {
@@ -300,19 +309,19 @@ Function Get-rsPowerShell7 {
 
     $MissingPWSH7 = $false
 
-    if ($PSVersionTable.PSVersion.Major -lt 7) {
+    [version]$CurrentVersion = if ($PSVersionTable.PSVersion.Major -lt 7) {
         $CheckpwshVersion = Test-Path -Path "C:\Program Files\PowerShell\7\pwsh.exe"
 
         if ($CheckpwshVersion -eq $true) {
-            [version]$CurrentVersion = (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
+            (Get-Command "C:\Program Files\PowerShell\7\pwsh.exe").Version
         }
         else {
             [version]$CurrentVersion = $PSVersionTable.PSVersion
-            $MissingPWSH7 = $true
+            $true
         }
     }
     else {
-        [version]$CurrentVersion = $PSVersionTable.PSVersion
+        $PSVersionTable.PSVersion
     }
 
     [version]$pwshV7 = "7.0.0.0"
@@ -403,7 +412,7 @@ Function Update-RSWinSoftware {
 
     # Importing appx with -usewindowspowershell if your using PowerShell 7 or higher
     if ($PSVersionTable.PSVersion.Major -ge 7) {
-        Import-Module appx -usewindowspowershell
+        Import-Module appx -UseWindowsPowershell
         Write-Output "This messages is expected if you are using PowerShell 7 or higher`n"
         Write-Output "Checking if PowerShell 7 have any updates..."
         Get-rsPowerShell7
