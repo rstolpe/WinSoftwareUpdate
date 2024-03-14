@@ -251,38 +251,25 @@ Function Confirm-RSDependency {
     # Collecting systeminformation
     $SysInfo = Get-RSSystemInfo
 
-    # If VCLibs are not installed it will get installed
-    if ($null -eq $SysInfo.VersionVClibs -or $SysInfo.VersionVClibs -eq "0.0.0.0") {
-        try {
-            Write-Output "Microsoft.VCLibs is not installed, downloading and installing it now..."
-            [string]$VCLibsOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
-            Write-Verbose "Downloading Microsoft.VCLibs..."
-            Invoke-RestMethod -Uri $SysInfo.UrlVCLibs -OutFile $VCLibsOutFile -HttpVersion $SysInfo.HTTPVersion
+    # If any dependencies are missing it will install them
+    foreach ($_info in $SysInfo.Dep.keys) {
+        $DepInfo = $SysInfo.Dep.$_info
+        if ($null -eq $DepInfo.version -or $DepInfo.version -eq "0.0.0.0") {
+            try {
+                Write-Output "$($_info) is not installed, downloading and installing it now..."
+                [string]$DepOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
+                Write-Verbose "Downloading $($_info)..."
+                Invoke-RestMethod -Uri $DepInfo.url -OutFile $DepOutFile -HttpVersion $SysInfo.HTTPVersion
 
-            Write-Verbose "Installing Microsoft.VCLibs..."
-            Add-AppxPackage $VCLibsOutFile
-            Write-Verbose "Deleting Microsoft.VCLibs downloaded installation file..."
-            Remove-Item $VCLibsOutFile -Force
-        }
-        catch {
-            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-            break
-        }
-    }
-
-    # If VCLibs are not installed it will get installed
-    if ($null -eq $SysInfo.VersionMicrosoftXaml -or $SysInfo.VersionMicrosoftXaml -eq "0.0.0.0") {
-        try {
-            Write-Output "Microsoft.UI.Xaml is not installed, downloading and installing it now..."
-            [string]$XamlOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.UI.Xaml.2.8.$($SysInfo.Arch).appx"
-            Invoke-RestMethod -Uri $SysInfo.UrlMicrosoftXaml -OutFile $XamlOutFile -HttpVersion $SysInfo.HTTPVersion
-
-            Add-AppxPackage $XamlOutFile
-            Remove-Item $XamlOutFile -Force
-        }
-        catch {
-            Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-            break
+                Write-Verbose "Installing $($_info)..."
+                Add-AppxPackage $DepOutFile
+                Write-Verbose "Deleting $($_info) downloaded installation file..."
+                Remove-Item $DepOutFile -Force
+            }
+            catch {
+                Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+                break
+            }
         }
     }
 
