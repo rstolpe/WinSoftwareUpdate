@@ -105,10 +105,12 @@ Function Confirm-RSWinGet {
     [version]$vGitHub = [string]$GitHubInfo.Tag
     if ([Version]$vWinGet -lt [Version]$vGitHub) {
         Write-Output "WinGet has a newer version $($vGitHub), downloading and installing it..."
+        Write-Verbose "Downloading WinGet..."
         Invoke-WebRequest -UseBasicParsing -Uri $GitHubInfo.DownloadUrl -OutFile $GitHubInfo.OutFile
 
         Write-Verbose "Installing version $($vGitHub) of WinGet..."
         Add-AppxPackage $($GitHubInfo.OutFile)
+        Write-Verbose "Deleting WinGet downloaded installation file..."
         Remove-Item $($GitHubInfo.OutFile) -Force
     }
     else {
@@ -171,14 +173,17 @@ Function Get-rsSystemInfo {
         # Collects everything in pscustomobject to get easier access to the information
         # Need to redothis to hashtable
         [System.Object]$SysInfo = [PSCustomObject]@{
-            VersionVClibs    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            UrlVClibs        = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
-            UrlVisualCRedist = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
-            VersionWinGet    = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-            Arch             = $Arch
-            VersionPS        = [version]$CurrentPSVersion
-            Temp             = $env:TEMP
-            HTTPVersion      = Switch ($PSVersionTable.PSVersion.Major) {
+            VersionVClibs        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+            UrlVClibs            = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
+            VersionMicrosoftXaml = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+            urlMicrosoftXaml     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
+            VersionVisualCRedist = ""
+            UrlVisualCRedist     = "https://aka.ms/vs/17/release/vc_redist.$($Arch).exe"
+            VersionWinGet        = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+            Arch                 = $Arch
+            VersionPS            = [version]$CurrentPSVersion
+            Temp                 = $env:TEMP
+            HTTPVersion          = Switch ($PSVersionTable.PSVersion.Major) {
                 7 { "3.0" }
                 default { "2.0" }
             }
@@ -252,6 +257,10 @@ Function Confirm-RSDependency {
             break
         }
     }
+
+    # Install Microsoft Desktop App Installer
+
+    # Install xml thing
 
     # Install VisualCRedist
     # To Install visualcredist use vc_redist.x64.exe /install /quiet /norestart
