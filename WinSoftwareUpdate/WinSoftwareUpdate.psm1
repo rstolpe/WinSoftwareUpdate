@@ -23,17 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
 
-# Verify what version of Microsoft.UI.Xaml is installed
-# Check if it needs to be updated and if so download and install it also download it if it's not installed
-#"https://api.github.com/repos/microsoft/microsoft-ui-xaml/releases"
-#Filter out Microsoft.UI.Xaml
-# Fitler out latest 
-#Get versionnumber
-# Download nuget package
-# Change name to .zip
-# Extract .appx
-# Then run Add-AppxPackage -Path .\Microsoft.UI.Xaml.X.X.appx
-
 Function Confirm-RSWinGet {
     <#
         .SYNOPSIS
