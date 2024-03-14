@@ -173,15 +173,17 @@ Function Get-rsSystemInfo {
         # Need to redothis to hashtable
         $SysInfo = [ordered]@{
             Software    = [ordered]@{
-                VClibs        = [ordered]@{
-                    Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-                    Url     = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
+                "Microsoft.VCLibs"  = [ordered]@{
+                    Version  = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.VCLibs.140.00_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+                    Url      = "https://aka.ms/Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
+                    FileName = "Microsoft.VCLibs.$($Arch).14.00.Desktop.appx"
                 }
-                MicrosoftXaml = [ordered]@{
-                    Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
-                    Url     = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
+                "Microsoft.UI.Xaml" = [ordered]@{
+                    Version  = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.UI.Xaml.2.8_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
+                    Url      = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.$($Arch).appx"
+                    FileName = "Microsoft.UI.Xaml.2.8.$($Arch).appx"
                 }
-                WinGet        = [ordered]@{
+                WinGet              = [ordered]@{
                     Version = $(try { (Get-AppxPackage -AllUsers | Where-Object { $_.Architecture -eq $Arch -and $_.PackageFamilyName -like "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe" } | Sort-Object { $_.Version -as [version] } -Descending | Select-Object Version -First 1).version } catch { "0.0.0.0" })
                     Url     = ""
                 }
@@ -253,22 +255,24 @@ Function Confirm-RSDependency {
 
     # If any dependencies are missing it will install them
     foreach ($_info in $SysInfo.Dep.keys) {
-        $DepInfo = $SysInfo.Dep.$_info
-        if ($null -eq $DepInfo.version -or $DepInfo.version -eq "0.0.0.0") {
-            try {
-                Write-Output "$($_info) is not installed, downloading and installing it now..."
-                [string]$DepOutFile = Join-Path -Path $SysInfo.Temp -ChildPath "Microsoft.VCLibs.140.00.$($SysInfo.Arch).appx"
-                Write-Verbose "Downloading $($_info)..."
-                Invoke-RestMethod -Uri $DepInfo.url -OutFile $DepOutFile -HttpVersion $SysInfo.HTTPVersion
+        if ($_info -notlike "WinGet") {
+            $DepInfo = $SysInfo.Dep.$_info
+            if ($null -eq $DepInfo.version -or $DepInfo.version -eq "0.0.0.0") {
+                try {
+                    Write-Output "$($_info) is not installed, downloading and installing it now..."
+                    [string]$DepOutFile = Join-Path -Path $SysInfo.Temp -ChildPath $DepInfo.FileName
+                    Write-Verbose "Downloading $($_info)..."
+                    Invoke-RestMethod -Uri $DepInfo.url -OutFile $DepOutFile -HttpVersion $SysInfo.HTTPVersion
 
-                Write-Verbose "Installing $($_info)..."
-                Add-AppxPackage $DepOutFile
-                Write-Verbose "Deleting $($_info) downloaded installation file..."
-                Remove-Item $DepOutFile -Force
-            }
-            catch {
-                Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
-                break
+                    Write-Verbose "Installing $($_info)..."
+                    Add-AppxPackage $DepOutFile
+                    Write-Verbose "Deleting $($_info) downloaded installation file..."
+                    Remove-Item $DepOutFile -Force
+                }
+                catch {
+                    Write-Error "Message: $($_.Exception.Message)`nError Line: $($_.InvocationInfo.Line)`n"
+                    break
+                }
             }
         }
     }
